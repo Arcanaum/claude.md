@@ -26,6 +26,12 @@ Requirements: an authenticated `gh` CLI, and `python3` for `babysit-pr`'s
 models (T3 Code's `delegate_task` or similar); plain Claude Code cannot run
 them and the skills say to report that instead of substituting a model.
 
+In Claude Code cloud sessions (claude.ai/code), `gh` is already authenticated
+(`gh auth status` wrongly reports an invalid token; `gh api user` works), but
+GitHub GraphQL is blocked. So `gh pr view/checks/list` and `pr-wait` fail
+there; `file-pr` falls back to REST, and babysitting uses the session's
+built-in PR activity watching instead. Locally everything works.
+
 ## Use them in every project on your own computer
 
 ```bash
