@@ -41,6 +41,12 @@ State lives in ~/.local/state/pr-wait/. A lock makes a second watcher for the
 same PR exit at once. A state file lets a restarted watcher report what arrived
 while no watcher ran. The first run for a PR records what already exists and
 reports only what comes after.
+
+Everything is read over the REST API, so pr-wait also works where GraphQL is
+blocked, as in Claude Code cloud sessions. REST cannot see whether a review
+thread is resolved: that comes from GraphQL, or from the cloud sessions'
+pulls/<n>/ccr/review_threads route when GraphQL is blocked. A poll makes about
+eight API calls, about 1,400 an hour at the default interval.
 """
 
 from __future__ import annotations
@@ -77,25 +83,20 @@ FAILED = ("fail", "cancel")
 # gh pr checks buckets, worst first. Duplicate names (push and pull_request runs
 # of one job) collapse to the worst bucket.
 RANK = {"fail": 4, "cancel": 3, "pending": 2, "pass": 1, "skipping": 0}
+# gh pr checks' bucket for each check run conclusion or commit status state.
+# Anything else (queued, in progress, waiting, expected) is pending.
+BUCKETS = {
+    "SUCCESS": "pass", "SKIPPED": "skipping", "NEUTRAL": "skipping", "CANCELLED": "cancel",
+    "FAILURE": "fail", "ERROR": "fail", "TIMED_OUT": "fail", "ACTION_REQUIRED": "fail", "STARTUP_FAILURE": "fail",
+}
+PAGE = 100
 
-QUERY = """
+# REST has no thread resolution, so this is the one GraphQL query.
+THREADS_QUERY = """
 query($owner: String!, $name: String!, $number: Int!) {
-  viewer { login }
   repository(owner: $owner, name: $name) {
     pullRequest(number: $number) {
-      url state headRefOid baseRefName mergeStateStatus
-      author { login }
-      baseRef { target { oid } }
-      comments(last: 100) { nodes { id url body author { login __typename } } }
-      reviews(last: 100) {
-        nodes { id url state body commit { oid } author { login __typename } }
-      }
-      reviewThreads(last: 100) {
-        nodes {
-          isResolved path line
-          comments(first: 100) { nodes { id url body author { login __typename } } }
-        }
-      }
+      reviewThreads(last: 100) { nodes { isResolved comments(first: 1) { nodes { url } } } }
     }
   }
 }
@@ -140,6 +141,61 @@ def gh(args: list[str], allow: tuple[int, ...] = (0,)) -> subprocess.CompletedPr
 
 def gh_lines(args: list[str]) -> list[str]:
     return [line for line in gh(args).stdout.splitlines() if line]
+
+
+def gh_list(path: str, key: str | None = None) -> list[Json]:
+    """Every item of a REST list. Pages by number, because gh's --paginate follows
+    numeric-ID repository links, which Claude Code's GitHub proxy refuses."""
+    found: list[Json] = []
+    sep = "&" if "?" in path else "?"
+    page = 1
+    while True:
+        data = json.loads(gh(["api", f"{path}{sep}per_page={PAGE}&page={page}"]).stdout)
+        batch = data[key] if key else data
+        found.extend(batch)
+        if len(batch) < PAGE:
+            return found
+        page += 1
+
+
+def node(item: Json) -> Json:
+    """A REST comment or review in the GraphQL shape the watcher reads."""
+    user = item.get("user") or {}
+    return {
+        "id": item["node_id"],
+        "url": item["html_url"],
+        "body": item.get("body") or "",
+        "author": {"login": user.get("login") or "ghost", "__typename": user.get("type")},
+    }
+
+
+def listed(value: Any) -> list[Any]:
+    """The list in a JSON list, a GraphQL connection, or a wrapper object."""
+    if isinstance(value, list):
+        return value
+    if isinstance(value, dict):
+        for key in ("nodes", "review_threads", "reviewThreads", "threads", "comments", "data", "repository", "pullRequest"):
+            if key in value:
+                return listed(value[key])
+    raise ValueError(f"no list in {json.dumps(value)[:80]}")
+
+
+def unresolved_urls(threads: Any) -> list[str]:
+    """First-comment URLs of unresolved review threads. Reads camelCase and
+    snake_case, because the ccr/review_threads route is not documented."""
+    urls: list[str] = []
+    for thread in listed(threads):
+        if not isinstance(thread, dict):
+            raise ValueError(f"thread is not an object: {json.dumps(thread)[:80]}")
+        resolved = next((thread[k] for k in ("isResolved", "is_resolved", "resolved") if k in thread), None)
+        if resolved is None:
+            raise ValueError(f"thread has no resolved flag: {json.dumps(thread)[:80]}")
+        if resolved:
+            continue
+        comments = thread.get("comments")
+        first = (listed(comments) if isinstance(comments, (list, dict)) else []) or [thread]
+        urls.append(first[0].get("url") or first[0].get("html_url") or str(first[0].get("id", "thread")))
+    return urls
 
 
 def bot_name(text: str | None) -> str | None:
@@ -193,11 +249,16 @@ def parse_target(raw: str | None, repo: str | None) -> tuple[str, int]:
         try:
             repo = gh(["repo", "view", "--json", "nameWithOwner", "--jq", ".nameWithOwner"]).stdout.strip()
         except GhError as error:
-            fail(f"no --repo given and the current directory has no GitHub repo ({error})")
+            # gh repo view needs GraphQL. Without it, read the origin remote.
+            remote = subprocess.run(["git", "remote", "get-url", "origin"], capture_output=True, text=True).stdout
+            match = re.search(r"github\.com[/:]([\w.-]+/[\w.-]+?)(?:\.git)?/?$", remote.strip())
+            if not match:
+                fail(f"no --repo given and the current directory has no GitHub repo ({error})")
+            repo = match.group(1)
     if not re.fullmatch(r"[\w.-]+/[\w.-]+", repo):
         fail(f"'{repo}' is not owner/name")
     try:
-        gh(["pr", "view", str(pr), "-R", repo, "--json", "number"])
+        gh(["api", f"repos/{repo}/pulls/{pr}", "--jq", ".number"])
     except GhError as error:
         if not error.transient:  # a transient failure is retried by the poll loop
             fail(f"cannot read {repo}#{pr}: {error}")
@@ -260,6 +321,9 @@ class Watcher:
         self.required: set[str] | None = None
         self.prev_snapshot: list[tuple[str, str]] | None = None
         self.pr_files: dict[str, set[str]] = {}
+        self.viewer: str | None = None
+        self.threads_route = "graphql"
+        self.threads_error: str | None = None
 
     def load(self) -> Json | None:
         try:
@@ -296,35 +360,110 @@ class Watcher:
         sys.exit(code)
 
     def fetch_pr(self) -> Json:
-        proc = gh([
-            "api", "graphql", "-f", f"query={QUERY}",
-            "-f", f"owner={self.owner}", "-f", f"name={self.name}", "-F", f"number={self.pr}",
-        ])
-        data = json.loads(proc.stdout)["data"]
-        pr = data["repository"]["pullRequest"]
-        pr["viewer"] = data["viewer"]["login"]
-        return pr
+        """The PR over REST, in the shape of the GraphQL query it replaced."""
+        rest = f"repos/{self.repo}"
+        raw = json.loads(gh(["api", f"{rest}/pulls/{self.pr}"]).stdout)
+        if self.viewer is None:
+            try:
+                self.viewer = gh(["api", "user", "--jq", ".login"]).stdout.strip()
+            except GhError as error:
+                if error.transient:
+                    raise
+                # App tokens, as in GitHub Actions, cannot read /user.
+                log(f"cannot read the gh user ({error}); their comments will count as events")
+                self.viewer = ""
+        base = raw["base"]["ref"]
+        try:
+            base_oid = gh(["api", f"{rest}/git/ref/heads/{base}", "--jq", ".object.sha"]).stdout.strip() or None
+        except GhError as error:
+            if error.transient:
+                raise
+            base_oid = None  # the base branch is gone
+        reviews = [
+            {**node(r), "state": r["state"], "commit": {"oid": r.get("commit_id")}}
+            for r in gh_list(f"{rest}/pulls/{self.pr}/reviews")
+        ]
+        # REST has no threads. Every reply points at the thread's first comment.
+        threads: dict[int, Json] = {}
+        for c in gh_list(f"{rest}/pulls/{self.pr}/comments"):
+            thread = threads.setdefault(
+                c.get("in_reply_to_id") or c["id"],
+                {"path": c["path"], "line": c.get("line"), "comments": {"nodes": []}},
+            )
+            thread["comments"]["nodes"].append(node(c))
+        return {
+            "url": raw["html_url"],
+            "state": "MERGED" if raw.get("merged") else raw["state"].upper(),
+            "headRefOid": raw["head"]["sha"],
+            "baseRefName": base,
+            "mergeStateStatus": (raw.get("mergeable_state") or "unknown").upper(),
+            "author": {"login": (raw.get("user") or {}).get("login") or "ghost"},
+            "viewer": self.viewer,
+            "baseRef": {"target": {"oid": base_oid}},
+            "comments": {"nodes": [node(c) for c in gh_list(f"{rest}/issues/{self.pr}/comments")]},
+            "reviews": {"nodes": reviews},
+            "reviewThreads": {"nodes": list(threads.values())},
+        }
 
-    def fetch_checks(self) -> dict[str, Json]:
-        # gh pr checks exits 8 while checks are pending and 1 when one failed.
-        # Those are states, not errors: read the JSON and ignore the exit code.
-        proc = gh(["pr", "checks", str(self.pr), "-R", self.repo, "--json", "name,bucket,link,description"], allow=(0, 1, 8))
-        if not proc.stdout.strip():
-            if "no checks reported" in proc.stderr:
-                return {}
-            raise GhError(proc.stderr.strip() or f"gh pr checks exited {proc.returncode}", False)
+    def fetch_checks(self, head: str) -> dict[str, Json]:
+        """Check runs and commit statuses on the head, in gh pr checks' buckets."""
+        rows: list[Json] = []
+        for run in gh_list(f"repos/{self.repo}/commits/{head}/check-runs", "check_runs"):
+            state = run["conclusion"] if run["status"] == "completed" else run["status"]
+            rows.append({
+                "name": run["name"],
+                "bucket": BUCKETS.get((state or "").upper(), "pending"),
+                "link": run.get("details_url") or run.get("html_url") or "",
+                "description": (run.get("output") or {}).get("title") or "",
+            })
+        for status in gh_list(f"repos/{self.repo}/commits/{head}/status", "statuses"):
+            rows.append({
+                "name": status["context"],
+                "bucket": BUCKETS.get(status["state"].upper(), "pending"),
+                "link": status.get("target_url") or "",
+                "description": status.get("description") or "",
+            })
         checks: dict[str, Json] = {}
-        for row in json.loads(proc.stdout):
+        for row in rows:
             current = checks.get(row["name"])
             if current is None or RANK.get(row["bucket"], 2) > RANK.get(current["bucket"], 2):
                 checks[row["name"]] = row
         return checks
 
+    def unresolved_threads(self) -> list[str] | None:
+        """First-comment URLs of unresolved review threads, from GraphQL, or from
+        ccr/review_threads where GraphQL is blocked. None when neither answers."""
+        if self.threads_route == "graphql":
+            try:
+                proc = gh([
+                    "api", "graphql", "-f", f"query={THREADS_QUERY}",
+                    "-f", f"owner={self.owner}", "-f", f"name={self.name}", "-F", f"number={self.pr}",
+                ])
+                return unresolved_urls(json.loads(proc.stdout)["data"]["repository"]["pullRequest"]["reviewThreads"])
+            except GhError as error:
+                if error.transient:
+                    raise
+                log(f"GraphQL failed ({error}); reading review threads from ccr/review_threads")
+                self.threads_route = "ccr"
+        try:
+            proc = gh(["api", f"repos/{self.repo}/pulls/{self.pr}/ccr/review_threads"])
+            return unresolved_urls(json.loads(proc.stdout))
+        except GhError as error:
+            if error.transient:
+                raise
+            reason = str(error)
+        except (ValueError, AttributeError, TypeError) as error:
+            reason = f"unexpected response: {error}"
+        if reason != self.threads_error:
+            log(f"cannot read review thread resolution: {reason}")
+            self.threads_error = reason
+        return None
+
     def base_overlap(self, head: str, old: str, new: str) -> list[str]:
         """Files this PR touches that the new base commits also touch."""
         try:
             if head not in self.pr_files:
-                self.pr_files[head] = set(gh_lines(["pr", "diff", str(self.pr), "-R", self.repo, "--name-only"]))
+                self.pr_files[head] = {f["filename"] for f in gh_list(f"repos/{self.repo}/pulls/{self.pr}/files")}
             moved = gh_lines(["api", f"repos/{self.repo}/compare/{old}...{new}", "--jq", ".files[].filename"])
         except GhError as error:
             log(f"could not compare base commits: {error}")
@@ -353,9 +492,10 @@ class Watcher:
             self.required = required_checks(self.repo, base)
             gate = ", ".join(sorted(self.required)) or "none set, so every CI check gates"
             log(f"watching {self.repo}#{self.pr} until {self.until}; required checks: {gate}")
-        checks = self.fetch_checks()
         head = pr["headRefOid"]
         short = head[:7]
+        checks = self.fetch_checks(head)
+        unresolved = self.unresolved_threads()
         mine = {who(pr)[0], pr["viewer"]}
         comments = pr["comments"]["nodes"]
         reviews = pr["reviews"]["nodes"]
@@ -399,11 +539,8 @@ class Watcher:
             if review["state"] in ("APPROVED", "CHANGES_REQUESTED") or review["body"].strip():
                 state = review["state"].lower().replace("_", " ")
                 self.emit(f"c:{review['id']}", f"review from {login} ({state}): {snippet(review['body'])} {review['url']}")
-        unresolved: list[str] = []
         for thread in threads:
             nodes = thread["comments"]["nodes"]
-            if not thread["isResolved"] and nodes:
-                unresolved.append(nodes[0]["url"])
             where = f"{thread['path']}:{thread['line']}" if thread["line"] else thread["path"]
             for index, comment in enumerate(nodes):
                 login, _ = who(comment)
@@ -487,7 +624,7 @@ class Watcher:
             else "",
             ", ".join(bot_status[b] for b in GATING_BOTS + ADVISORY_BOTS if b in bot_status)
             or "no Greptile or Macroscope yet",
-            f"{len(unresolved)} unresolved threads",
+            f"{len(unresolved)} unresolved threads" if unresolved is not None else "unresolved threads unknown",
             f"merge state {merge_state}",
         ]
         summary = "; ".join(p for p in parts if p)
@@ -505,6 +642,8 @@ class Watcher:
                 self.finish(0, [f"green on {short}: {summary}{self.behind(base, base_oid, head)}"])
             # ready waits for Greptile or Macroscope, never for CodeRabbit.
             if green and reviewed:
+                if unresolved is None:
+                    self.finish(1, [f"cannot read review thread resolution on {short}: check threads by hand, or use --until green"])
                 if unresolved:
                     self.finish(1, [f"blocked by {len(unresolved)} unresolved threads on {short}: {' '.join(unresolved)}"])
                 if merge_state == "BEHIND":

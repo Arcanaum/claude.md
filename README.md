@@ -6,8 +6,9 @@ Code runs in this repo (locally or in a cloud session).
 ## Installed skills
 
 [tstack](https://github.com/t3dotgg/tstack) by Theo Browne (MIT, see
-`.claude/skills/LICENSE.tstack`), copied unmodified from commit `11e37a7`
-(2026-11-11).
+`.claude/skills/LICENSE.tstack`), copied from commit `11e37a7` (2026-11-11).
+One local change: `babysit-pr`'s `pr-wait` script reads PRs over the REST API
+instead of GraphQL, so it works in Claude Code cloud sessions (see below).
 
 | Skill | Say | What it does |
 |---|---|---|
@@ -28,9 +29,13 @@ them and the skills say to report that instead of substituting a model.
 
 In Claude Code cloud sessions (claude.ai/code), `gh` is already authenticated
 (`gh auth status` wrongly reports an invalid token; `gh api user` works), but
-GitHub GraphQL is blocked. So `gh pr view/checks/list` and `pr-wait` fail
-there; `file-pr` falls back to REST, and babysitting uses the session's
-built-in PR activity watching instead. Locally everything works.
+GitHub GraphQL is blocked, and `gh api --paginate` fails on page 2. So
+`gh pr view/checks/list` fail there; `file-pr` falls back to REST. `pr-wait`
+works: it uses REST with numbered pages, and reads review thread resolution
+from GraphQL, or from the cloud-only `pulls/<n>/ccr/review_threads` route when
+GraphQL is blocked. That route's response format is undocumented and not yet
+checked against a real PR; if `pr-wait` cannot read it, `--until ready` stops
+with "cannot read review thread resolution" rather than guessing.
 
 ## Use them in every project on your own computer
 
@@ -46,3 +51,6 @@ cp -R claude.md/.claude/skills/* ~/.claude/skills/
 git clone https://github.com/t3dotgg/tstack /tmp/tstack
 cp -R /tmp/tstack/skills/* .claude/skills/
 ```
+
+This overwrites the REST `pr-wait` and the cloud note in `babysit-pr/SKILL.md`.
+Check `git diff .claude/skills/babysit-pr` and merge the two by hand.

@@ -73,6 +73,11 @@ used up, the REST limit is separate and usually still has room. Use
 `gh api repos/<owner>/<repo>/pulls/<n>` to read a PR, and
 `gh api repos/<owner>/<repo>/commits/<sha>/check-runs` for checks.
 
+`pr-wait` reads over REST, plus one GraphQL query per poll for thread
+resolution. Claude Code cloud sessions block GraphQL, so there `gh pr` commands
+fail: use the REST calls above. `pr-wait` still works there, reading thread
+resolution from `repos/<owner>/<repo>/pulls/<n>/ccr/review_threads`.
+
 ## Reviews
 
 Only act on checks and comments newer than the latest push. Verify every bot
