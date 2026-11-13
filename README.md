@@ -3,7 +3,7 @@
 Claude Code setup. Skills in `.claude/skills/` load automatically when Claude
 Code runs in this repo (locally or in a cloud session).
 
-## Installed skills
+## tstack
 
 [tstack](https://github.com/t3dotgg/tstack) by Theo Browne (MIT, see
 `.claude/skills/LICENSE.tstack`), copied from commit `11e37a7` (2026-11-11).
@@ -37,12 +37,47 @@ GraphQL is blocked. That route's response format is undocumented and not yet
 checked against a real PR; if `pr-wait` cannot read it, `--until ready` stops
 with "cannot read review thread resolution" rather than guessing.
 
+## taste-skill (`design-taste-frontend`)
+
+[taste-skill](https://github.com/Leonxlnx/taste-skill) by Leon Lin (MIT, see
+`.claude/skills/LICENSE.taste-skill`), v2.5.1 (commit `f6b7657`), copied
+unmodified into `.claude/skills/design-taste-frontend/` (40 MB, mostly bundled
+photographs). It steers website and landing-page work away from generic
+"AI-made" design, then checks the page in headless Chrome.
+
+- Triggers when you build, redesign, restyle or review a landing page or
+  company site, or say a page looks generic.
+- Needs Node 22+ and Chrome, Edge or Chromium (`CHROME_PATH` for a
+  non-standard location; `effects.mjs` reads `CHROME`). ffmpeg is optional.
+- Once the skill is used in a session, its Stop hook runs `scripts/gate.mjs`
+  whenever Claude stops. It does nothing unless the folder has an armed build
+  (`.taste-skill/build.json`). With one, it runs the Chrome checks (up to about
+  10 minutes) and can send Claude back to fix failures, 7 times per build by
+  default.
+- Network: photo search on commons.wikimedia.org, downloads from
+  upload.wikimedia.org and picsum.photos, icons from cdn.jsdelivr.net, Google
+  Fonts links in generated pages. No API keys, no telemetry.
+- Cloud sessions run as root, and the scripts start Chrome without
+  `--no-sandbox`, which Chrome normally refuses as root. Not tested yet.
+
+Reviewed before install (2026-11-13): every script read for network, process,
+file and credential use. No exfiltration, obfuscation or download-and-run
+found. Re-review before updating: the Stop hook runs code automatically.
+
 ## Use them in every project on your own computer
 
 ```bash
 git clone https://github.com/arcanaum/claude.md
 mkdir -p ~/.claude/skills
 cp -R claude.md/.claude/skills/* ~/.claude/skills/
+```
+
+taste-skill is also a Claude Code plugin. To install it that way instead,
+pinned to the reviewed tag, run inside Claude Code:
+
+```
+/plugin marketplace add Leonxlnx/taste-skill#v2.5.1
+/plugin install taste-skill@taste-skill
 ```
 
 ## Update from upstream
@@ -54,3 +89,11 @@ cp -R /tmp/tstack/skills/* .claude/skills/
 
 This overwrites the REST `pr-wait` and the cloud note in `babysit-pr/SKILL.md`.
 Check `git diff .claude/skills/babysit-pr` and merge the two by hand.
+
+taste-skill (replace the tag with the release you reviewed):
+
+```bash
+git clone --branch v2.5.1 https://github.com/Leonxlnx/taste-skill /tmp/taste-skill
+rm -rf .claude/skills/design-taste-frontend
+cp -R /tmp/taste-skill/skills/taste-skill .claude/skills/design-taste-frontend
+```
