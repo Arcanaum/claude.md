@@ -12,25 +12,30 @@ module.exports.art = (R, P, { W, H }) => {
   s += F.plane([[-10, 150], [730, 150], [730, 700], [-10, 700]], { tw: 72, th: 50, outline: false });
   s += F.ridge([-40, 158], [760, 158], { h: 30, capR: 21, horns: [false, false] });
 
-  // Guu, from behind, crawling up
-  const g = R.guu({ x: 372, y: 478, s: 1.5, dir: 'back', lean: -5,
-    armL: { a: [152, 14], hand: 'grip', over: true }, armR: { a: [118, 58], hand: 'grip', over: true },
-    legL: { a: [42, -30] }, legR: { a: [62, -84] } });
-  s += g;
+  // Guu, from behind, crawling up. (Legs/arms slightly stretched via the rig's `build` option so the chain reads.)
+  const gs = 1.4, gx = 372;
+  const guuO = { x: gx, y: 470, s: gs, dir: 'back', lean: -4, build: { th: 34, sh: 32 },
+    armL: { a: [104, 62], hand: 'grip' }, armR: { a: [92, 40], hand: 'grip' },
+    legL: { a: [24, -8], footRot: 10 }, legR: { a: [34, -44], footRot: -10 } };
+  const g = R.guu(guuO);
   const aL = g.info.ankleL, aR = g.info.ankleR;
-  // brothers hanging on, looking down at the tile
-  s += R.choki({ x: aL[0] - 62, y: aL[1] + 172, s: 1.15, lean: 10, expr: 'surprised', look: [0.8, 1],
-    armR: { at: [aL[0] - 2, aL[1] + 6], hand: 'grip', over: true }, armL: { a: [118, 30], hand: 'v' },
-    legL: { a: [16, 10] }, legR: { a: [-8, 30] } });
-  s += R.paa({ x: aR[0] + 70, y: aR[1] + 190, s: 1.15, lean: -12, expr: 'worried', look: [-0.8, 1],
-    armL: { at: [aR[0] + 2, aR[1] + 6], hand: 'grip', over: true }, armR: { a: [112, 40], hand: 'palm' },
-    legL: { a: [-6, 26] }, legR: { a: [20, 8] } });
+  // brothers hanging on to an ankle each, looking back down at the tile (drawn first, Guu's legs in front)
+  const bs = 1.12, long = { armU: 31, armF: 29 };
+  const c = R.choki({ x: aL[0] - 92, y: aL[1] + 172, s: bs, lean: -8, expr: 'surprised', look: [0.8, 1], build: long,
+    armR: { at: [aL[0] - 6, aL[1] + 4], hand: 'none' }, armL: { a: [112, 40], hand: 'v' },
+    legL: { a: [18, 6] }, legR: { a: [-10, 30] } });
+  const p = R.paa({ x: aR[0] + 96, y: aR[1] + 176, s: bs, lean: 8, expr: 'worried', look: [-0.8, 1], build: long,
+    armL: { at: [aR[0] + 6, aR[1] + 4], hand: 'none' }, armR: { a: [108, 44], hand: 'palm' },
+    legL: { a: [-8, 28] }, legR: { a: [20, 6] } });
+  s += c + p + g;
+  s += R.hand('fist', c.info.wristR[0] + 4, c.info.wristR[1] - 4, 36, { rotDeg: 60, side: -1 });
+  s += R.hand('fist', p.info.wristL[0] - 4, p.info.wristL[1] - 4, 36, { rotDeg: -60, side: 1 });
 
   // the loose tile skidding away + CLACK
   s += R.ink('M352 532L346 560M384 530L388 556M368 526L368 548', { w: R.LW.in });
-  s += F.looseTile(366, 598, 1.25, 14);
+  s += F.looseTile(366, 598, 1.25, 16) + F.puff(318, 618, 34, -20) + F.puff(420, 612, 30, 15);
   s += P.hollow('CLACK', 372, 678, 50, { rotDeg: -4 });
-  s += P.hollow('CLACK', 96, 420, 34, { rotDeg: -12 });
-  s += P.hollow('CLACK', 640, 330, 30, { rotDeg: 10 });
+  s += P.hollow('CLACK', 100, 392, 42, { rotDeg: -12 });
+  s += P.hollow('CLACK', 628, 300, 38, { rotDeg: 10 });
   return s;
 };

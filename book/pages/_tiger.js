@@ -147,7 +147,7 @@ function barrel(x, y, w = 190, h = 250, { handle = true, tilt = 0 } = {}) {
   let s = '';
   const sag = 13;
   if (handle) { // rope handle behind the rim, over the top
-    const pts = [[-wt + 8, -h + 4], [-wt * 0.8, -h - 44], [0, -h - 66], [wt * 0.8, -h - 44], [wt - 8, -h + 4]].map(p => ap(m, p));
+    const pts = [[-wt + 8, -h + 4], [-wt * 0.86, -h - 60], [0, -h - 92], [wt * 0.86, -h - 60], [wt - 8, -h + 4]].map(p => ap(m, p));
     s += rope(pts, 15);
   }
   s += shape(T(`M${-wt} ${-h}Q${-c} ${-h / 2} ${-wt} 0Q0 ${sag * 1.5} ${wt} 0Q${c} ${-h / 2} ${wt} ${-h}Q0 ${-h + sag} ${-wt} ${-h}Z`));

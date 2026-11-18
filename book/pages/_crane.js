@@ -160,13 +160,16 @@ function floor({ y0, W = 720, H = 690, vx = 360, vy, n = 9, seams = true, skirt 
   return s;
 }
 // Rice-paper window / screen grid. Panes should stay >= 25 units.
-function shoji(x, y, w, h, { cols = 3, rows = 5, frame = 9 } = {}) {
+function shoji(x, y, w, h, { cols = 3, rows = 5, frame = 9, kick = 0 } = {}) {
   let s = shape(rrect(x - frame, y - frame, w + 2 * frame, h + 2 * frame, 3));
-  s += shape(rrect(x, y, w, h, 1), { w: LW.in });
+  const gh = h - kick - (kick ? frame : 0);
+  s += shape(rrect(x, y, w, gh, 1), { w: LW.in });
   let d = '';
-  for (let i = 1; i < cols; i++) d += `M${r1(x + w * i / cols)} ${y}L${r1(x + w * i / cols)} ${y + h}`;
-  for (let j = 1; j < rows; j++) d += `M${x} ${r1(y + h * j / rows)}L${x + w} ${r1(y + h * j / rows)}`;
-  return s + ink(d, { w: LW.in });
+  for (let i = 1; i < cols; i++) d += `M${r1(x + w * i / cols)} ${y}L${r1(x + w * i / cols)} ${y + gh}`;
+  for (let j = 1; j < rows; j++) d += `M${x} ${r1(y + gh * j / rows)}L${x + w} ${r1(y + gh * j / rows)}`;
+  s += ink(d, { w: LW.in });
+  if (kick) s += shape(rrect(x, y + h - kick, w, kick, 1), { w: LW.in });
+  return s;
 }
 // Tall narrow paper lantern hanging on a cord from (x, y0). Body top at y1.
 function lantern(x, y0, y1, { w = 44, h = 92 } = {}) {
@@ -185,12 +188,13 @@ function scroll(x, y, w, h, { emblem = null } = {}) {
   s += ink(`M${x - w * 0.36} ${y}L${x} ${y - 30}L${x + w * 0.36} ${y}`, { w: LW.in });
   s += shape(ell(x, y - 31, 5, 5), { w: LW.in });
   s += shape(rrect(x - w / 2, y + 4, w, h, 2));
-  s += ink(rrect(x - w / 2 + 12, y + 30, w - 24, h - 60, 2), { w: LW.in });
-  const es = emblem || Math.min(w - 44, 130);
-  s += P.emblem('crane', x, y + h * 0.36, es);
-  // three calm brush marks under the crane (reeds)
-  const by = y + h * 0.36 + es * 0.62;
-  s += ink(`M${x - 14} ${r1(by + (h * 0.5 - es * 0.3))}Q${x - 20} ${r1(by + 40)} ${x - 10} ${r1(by)}M${x + 4} ${r1(by + (h * 0.5 - es * 0.3))}Q${x} ${r1(by + 60)} ${x + 14} ${r1(by + 26)}`, { w: LW.in });
+  s += ink(rrect(x - w / 2 + 11, y + 34, w - 22, h - 68, 2), { w: LW.in });
+  const es = emblem || Math.min(w - 26, 130);
+  s += shape(ell(x + w * 0.12, y + h * 0.2, w * 0.15, w * 0.15), { w: LW.in });        // sun
+  s += P.emblem('crane', x, y + h * 0.45, es);
+  let d = '';
+  for (let i = 0; i < 3; i++) { const yy = r1(y + h * 0.7 + i * 24), x0 = x - w * 0.3 + i * 5, ww = w * 0.2; d += `M${r1(x0)} ${yy}Q${r1(x0 + ww / 2)} ${yy - 12} ${r1(x0 + ww)} ${yy}Q${r1(x0 + ww * 1.5)} ${yy + 12} ${r1(x0 + ww * 2)} ${yy}Q${r1(x0 + ww * 2.5)} ${yy - 12} ${r1(x0 + ww * 3)} ${yy}`; }
+  s += ink(d, { w: LW.in });                                                           // water
   s += tube(`M${x - w / 2 - 12} ${y}L${x + w / 2 + 12} ${y}`, 7, { o: LW.in });
   s += tube(`M${x - w / 2 - 14} ${y + h + 6}L${x + w / 2 + 14} ${y + h + 6}`, 10, { o: LW.in });
   return s;
