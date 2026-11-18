@@ -3,7 +3,7 @@
 const T = require('./_turtle');
 module.exports.art = (R, P, { W, H }) => {
   let s = '';
-  const FY = 410, G = 622, sc = 1.7, px = 426;
+  const FY = 410, G = 622, sc = 1.7, px = 384;
   // ---- garden through the wide-open doors ----
   const gx0 = 96, gw = 528;
   const front = T.bush(gx0 + 60, FY - 44, 120) + T.bush(gx0 + 250, FY - 70, 100) + T.bush(gx0 + 470, FY - 40, 120);
@@ -15,28 +15,23 @@ module.exports.art = (R, P, { W, H }) => {
   // ---- floor ----
   s += R.ink(`M-10 ${FY}L730 ${FY}`, { w: R.LW.out });
   s += T.shellFloor(380, 628, 400, 100);
-  // ---- Paa: perfectly still ----
-  const bx = px - 96 * sc, wy = G - 93 * sc;
+  // ---- Paa: perfectly still, front-on, the bowl held out in front of his chest ----
+  const bx = px, by = G - 80 * sc, hy = G - 60 * sc;
   const paa = R.paa({ x: px, y: G, s: sc, expr: 'calm',
-    armL: { at: [px - 66 * sc, wy], hand: 'palm', rot: -92, thumb: 1, hs: 1.05 }, armR: { at: [px - 50 * sc, wy + 12], hand: 'palm', rot: -96, thumb: 1, hs: 1.05 } });
+    armL: { at: [px - 43 * sc, hy], hand: 'palm', rot: 70, thumb: -1 }, armR: { at: [px + 43 * sc, hy], hand: 'palm', rot: -70, thumb: 1 } });
   s += paa;
-  // ---- Guu: a leapfrog table under Paa's forearms ----
-  const gx = px - 60 * sc;
-  s += R.guu({ x: gx, y: G + 6, s: sc, dir: 'left', lean: -92, headTilt: 60, expr: 'grin', look: [-0.6, -0.8],
-    legL: { foot: [-22, -6] }, legR: { foot: [14, -6] },
-    armL: { at: [gx - 86 * sc, G + 2], rot: 180 }, armR: { at: [gx - 56 * sc, G + 8], rot: 180 } });
-  // Paa's forearms again, resting on top of Guu's back
-  s += T.clipRect(0, wy - 70, px - 33 * sc, 122, paa);
   // ---- the bowl and the sparrow ----
-  const by = wy - 44;
-  s += T.bowl(bx, by, 170);
-  s += T.sparrow(bx - 70, by + 2, 92, { pose: 'land', rotDeg: 16 });
+  s += T.bowl(bx, by, 150);
+  s += T.sparrow(bx - 50, by + 2, 80, { pose: 'land', rotDeg: 12 });
+  // ---- Guu: standing beside him, both fists under Paa's forearm, holding it up ----
+  s += R.guu({ x: px - 214, y: G + 2, s: sc, dir: 'right', look: [1, -0.2], lean: 5, expr: 'determined', build: { armU: 33, armF: 31 },
+    armL: { at: [px - 124, hy + 26], rot: 0 }, armR: { at: [px - 86, hy + 36], rot: 0 } });
   // ---- Choki on tiptoe, two fingers on the itchy nose ----
   const h = paa.info.head;
-  s += R.choki({ x: 646, y: G - 12, s: sc, dir: 'left', look: 'left', lean: 6, headTilt: 6, expr: 'smirk',
+  s += R.choki({ x: px + 196, y: G - 12, s: sc, dir: 'left', look: 'left', lean: 4, headTilt: 5, expr: 'smirk',
     legL: { foot: [-12, -6], footRot: 50 }, legR: { foot: [12, -6], footRot: 40 },
-    armL: { at: [h[0] + 124, h[1] + 49], hand: 'v', rot: -91, hs: 1.3, over: true, thumb: 1 }, armR: { a: [24, 14], hand: 'mitt' } });
+    armL: { at: [h[0] + 124, h[1] + 49], hand: 'v', rot: -91, hs: 1.3, over: true, thumb: 1 }, armR: { a: [14, 10], hand: 'mitt' } });
   // feathers drifting down
-  s += T.feather(140, 322, 34, 30) + T.feather(250, 262, 30, -40) + T.feather(330, 292, 30, 70);
+  s += T.feather(130, 262, 32, 30) + T.feather(300, 300, 30, -40) + T.feather(470, 264, 30, 70);
   return s;
 };

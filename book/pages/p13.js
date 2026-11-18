@@ -12,8 +12,10 @@ module.exports.art = (R, P, { W, H }) => {
   const peek = { eyes: 'wide', brows: 'up', mouth: 'small' };
   let g = '';
   const LN = 13, off = TL => Math.sin(LN * Math.PI / 180) * (TL + 35.2) * S;
+  // two fingers up behind the top of his head, like ears
+  g += R.hand('v', gL + 44, 170, 104, { rotDeg: 10, cuff: true });
   g += R.choki({ x: gL - 10 - off(58) * 0.4, y: feet(262, 58), s: S, lean: LN * 0.4, dir: 'right', expr: { eyes: 'wide', brows: 'up', mouth: 'smirk' }, look: [0.8, 0.5],
-    build: { armU: 33, armF: 31 }, armR: { at: [gL + 104, 246], hand: 'v', hs: 1.15, rot: 10 }, armL: { a: [10, 5] } });
+    armR: { a: [10, 5], hand: 'none' }, armL: { a: [10, 5] } });
   g += R.guu({ x: gR + 6 + off(56), y: feet(412, 56), s: S, flip: true, lean: LN, dir: 'right', expr: peek, look: [0.8, 0.1] });
   g += R.paa({ x: gL - 6 - off(57), y: feet(538, 57), s: S, lean: LN, dir: 'right', expr: peek, look: [0.8, -0.3] });
   s += `<g clip-path="url(#p13gap)">${g}</g>`;

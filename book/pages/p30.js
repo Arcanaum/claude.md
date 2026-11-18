@@ -7,7 +7,11 @@ module.exports.art = (R, P, { W, H }) => {
   const fy = 560;       // top of the flat ledge (where they walk)
   const cx = 566;       // the wall's corner post (right side)
   // night sky to the right of the corner
-  s += F.sky([650, 236, 50], [[610, 150, 10], [690, 350, 9], [620, 420, 11], [686, 480, 8]]);
+  s += F.sky([652, 176, 46], [[606, 110, 10], [600, 250, 9], [700, 262, 8]]);
+  // a far roof with the masked girl wobbling on its ridge — she has turned around
+  s += F.plane([[560, 470], [730, 470], [730, 570], [560, 570]], { tw: 56, th: 40, outline: false });
+  s += F.ridge([560, 474], [740, 474], { h: 20, capR: 14, horns: [false, false] });
+  s += R.girl({ x: 652, y: 442, s: 0.6, mask: true, lean: 8, expr: 'surprised', look: 'left', armL: { a: [100, 10] }, armR: { a: [72, 30] }, legR: { a: [50, -80] } });
   // ---- upper-storey wall ----
   s += shape(poly([-10, 60], [cx, 60], [cx, fy], [-10, fy]), { w: LW.in });
   // beams
@@ -40,10 +44,10 @@ module.exports.art = (R, P, { W, H }) => {
   s += shape(poly([-10, fy], [730, fy], [730, fy + 28], [-10, fy + 28]));
   s += ink(`M20 ${fy + 14}L200 ${fy + 14}M260 ${fy + 14}L420 ${fy + 14}M470 ${fy + 14}L700 ${fy + 14}`, { w: LW.fine });
   // ---- brothers following, tiptoe ----
-  s += R.guu({ x: 76, y: fy - 2, s: 1.2, dir: 'right', expr: 'worried', look: 'right', lean: 3,
-    armL: { a: [40, 16], hand: 'fist' }, armR: { a: [26, -100], hand: 'fist' }, legL: { foot: [-24, -6] }, legR: { foot: [20, -6] } });
-  s += R.choki({ x: 214, y: fy - 2, s: 1.2, dir: 'right', expr: 'doubtful', look: 'right', lean: 4,
-    armL: { a: [22, -92] }, armR: { a: [26, 14] }, legL: { foot: [-8, -6] }, legR: { foot: [24, -20] } });
+  s += R.guu({ x: 100, y: fy - 2, s: 1.2, dir: 'right', expr: 'worried', look: 'right', lean: 3,
+    armL: { a: [22, 10], hand: 'fist' }, armR: { a: [26, -100], hand: 'fist' }, legL: { foot: [-24, -6] }, legR: { foot: [20, -6] } });
+  s += R.choki({ x: 240, y: fy - 2, s: 1.2, dir: 'right', expr: 'doubtful', look: 'right', lean: 4,
+    armL: { a: [22, -92] }, armR: { a: [18, -96] }, legL: { foot: [-8, -6] }, legR: { foot: [24, -20] } });
   // ---- Paa, leading, mid-sneeze: one palm flat on the corner post, the other showing where to step ----
   const p = R.paa({ x: 458, y: fy - 2, s: 1.6, dir: 'left', lean: -3, expr: { eyes: 'squeeze', brows: 'up', mouth: 'shout' },
     armR: { at: [cx - 16, 352], hand: 'palm', hs: 1.2, rot: 6 }, armL: { a: [32, 6], hand: 'palm' },

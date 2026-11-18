@@ -48,21 +48,16 @@ module.exports.art = (R, P, { W, H }) => {
     s += R.tube(R.line(a, [cx + k * 74, 392], b), 48);
     s += R.shape(R.xf(R.rrect(-38, -15, 76, 30, 9), R.chain(R.tr(b[0], b[1] - 6), R.rot(k * -8))), { w: R.LW.in });
   }
-  const items = [];
+  // two separate hands, little-finger edges touching in the middle, each with its thumb on the outside
   for (const k of [-1, 1]) {
-    items.push({ d: T(R.rrect(k > 0 ? -10 : -166, -122, 176, 202, 46)) });
-    // fingers, toward the reader (index on the outside, little finger in the middle)
-    const fx = [137, 101, 65, 30], fl = [114, 123, 118, 104];
-    fx.forEach((x, i) => items.push({ d: T(`M${k * x} 40L${k * (x + (i === 0 ? 3 : 0))} ${fl[i]}`), w: 30 }));
-    // thumb, out to the side
-    items.push({ d: T(`M${k * 140} -22L${k * 196} -66`), w: 34 });
-  }
-  s += R.union(items);
-  // light creases that keep the palms open and blank
-  s += R.ink(T('M0 63L0 78'), { w: R.LW.out });
-  for (const k of [-1, 1]) {
-    s += R.ink(T(`M${k * 152} 30Q${k * 148} 52 ${k * 140} 62`), { w: F });
-    
+    const M = R.chain(R.tr(cx, cy), R.rot(k * -4));
+    const items = [{ d: R.xf(R.rrect(k > 0 ? 3 : -167, -122, 164, 200, 44), M) }];
+    const fx = [139, 103, 67, 32], fl = [112, 122, 116, 102];          // short, curled-up fingertips toward the reader
+    fx.forEach((x, i) => items.push({ d: R.xf(`M${k * x} 40L${k * x} ${fl[i]}`, M), w: 30 }));
+    items.push({ d: R.xf(`M${k * 140} 0L${k * 186} -40L${k * 204} -92`, M), w: 38 });   // thumb
+    s += R.union(items);
+    s += R.ink(R.xf(`M${k * 150} 34Q${k * 132} 22 ${k * 128} -6`, M), { w: R.LW.in });   // thumb-root crease
+    for (const x of [121, 85, 49.5]) s += R.ink(R.xf(`M${k * x} 62L${k * x} 78`, M), { w: R.LW.in });
   }
   // "draw here" dashed outline: 268 x 152 of clear white
   s += R.ink(T(R.rrect(-136, -98, 272, 154, 30)), { w: F, dash: '11 10' });

@@ -23,17 +23,17 @@ module.exports.art = (R, P, { W, H }) => {
   // ---- the student ----
   const st = T.student({ x: 240, y: 606, s: 2.55, expr: { eyes: 'open', brows: 'angry', mouth: 'shout' }, look: [0.7, 1], headTilt: 10, lean: -2, shift: 4,
     legL: { foot: [-30, -6] }, footL: 'side', footDirL: -1,
-    legR: { a: [100, -40] }, footR: 'none',
+    legR: { a: [118, -28] }, footR: 'none',
     armL: { a: [52, -100], hs: 1.5 }, armR: { a: [58, -112], hs: 1.5 } });
   s += st;
-  s += T.sole(st.info.ankleR[0] + 6, st.info.ankleR[1] + 4, 2.6, 8);
+  s += T.sole(st.info.ankleR[0] + 4, st.info.ankleR[1] - 6, 2.4, 10);
   // whoosh marks round the raised foot
   
 
   // ---- the brothers, tiny, from behind ----
-  s += R.paa({ x: 425, y: 682, s: 0.66, dir: 'back', lean: -6, armL: { a: [118, 45], hand: 'palm' }, armR: { a: [118, 45], hand: 'palm' } });
-  s += R.guu({ x: 540, y: 678, s: 0.66, dir: 'back', armL: { a: [30, 10] }, armR: { a: [30, 10] } });
-  s += R.choki({ x: 645, y: 682, s: 0.66, dir: 'back', lean: 8, armL: { a: [20, 0], hand: 'mitt' }, armR: { a: [20, 0], hand: 'mitt' } });
+  s += R.paa({ x: 418, y: 684, s: 0.76, dir: 'back', lean: -6, armL: { a: [118, 45], hand: 'palm' }, armR: { a: [118, 45], hand: 'palm' } });
+  s += R.guu({ x: 535, y: 680, s: 0.76, dir: 'back', armL: { a: [30, 10] }, armR: { a: [30, 10] } });
+  s += R.choki({ x: 648, y: 684, s: 0.76, dir: 'back', lean: 8, armL: { a: [20, 0], hand: 'mitt' }, armR: { a: [20, 0], hand: 'mitt' } });
   // floor-shake marks by the planted foot
   s += R.ink('M52 600L30 588M48 640L22 644M70 668L52 686', { w: R.LW.out });
   return s;

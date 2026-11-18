@@ -10,7 +10,9 @@ module.exports.art = (R, P, { W, H }) => {
   s += F.sky([112, 104, 66], [[250, 50, 12], [40, 250, 9], [330, 130, 8], [560, 60, 11], [690, 250, 9], [470, 300, 8]]);
   s += P.cloud(240, 300, 110);
   // chimney (behind the ridge)
-  s += F.chimney(648, ry - 6, 1.2, { lean: 7 });
+  s += F.chimney(630, ry - 6, 1.2, { lean: 7 });
+  // the masked girl, far along the roof, wobbling on the chimney top — she has turned around
+  s += R.girl({ x: 658, y: 216, s: 0.56, mask: true, lean: -8, expr: 'surprised', look: 'left', armL: { a: [105, 10] }, armR: { a: [70, 30] }, legL: { a: [50, -80] } });
   // brothers scrambling up from the far side of the ridge (their hands are drawn after the ridge, hooked over it)
   s += R.guu({ x: 76, y: ry + 6, s: 1.2, expr: 'strain', lean: 6, look: 'right',
     armL: { at: [26, top - 2], hand: 'none' }, armR: { at: [138, top - 2], hand: 'none' } });
@@ -24,8 +26,8 @@ module.exports.art = (R, P, { W, H }) => {
   // lanterns strung below
   s += F.lanternString([-10, 520], [730, 536], 30, [0.1, 0.3, 0.5, 0.7, 0.9], 1.05);
   // the cat
-  s += F.cat(548, top - 22, 0.95, { rotDeg: -8 });
-  s += P.hollow('MEOW!', 552, 184, 64, { rotDeg: -7 });
+  s += F.cat(540, top - 22, 0.95, { rotDeg: -8 });
+  s += P.hollow('MEOW!', 510, 178, 58, { rotDeg: -7 });
   // Choki, tightrope-running
   s += R.choki({ x: 336, y: top - 20, s: 1.6, dir: 'right', expr: 'surprised', look: 'right', lean: -9,
     armL: { a: [122, 24] }, armR: { a: [58, 34] },
