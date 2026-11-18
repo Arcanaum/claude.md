@@ -16,16 +16,17 @@ module.exports.art = (R, P, { W, H }) => {
   s += R.ink(`M-10 ${FY}L730 ${FY}`, { w: R.LW.out });
   s += T.shellFloor(380, 628, 400, 100);
   // ---- Paa: perfectly still, front-on, the bowl held out in front of his chest ----
-  const bx = px, by = G - 80 * sc, hy = G - 60 * sc;
+  const bx = px, by = G - 84 * sc, hy = G - 64 * sc;
   const paa = R.paa({ x: px, y: G, s: sc, expr: 'calm',
-    armL: { at: [px - 43 * sc, hy], hand: 'palm', rot: 70, thumb: -1 }, armR: { at: [px + 43 * sc, hy], hand: 'palm', rot: -70, thumb: 1 } });
+    armL: { at: [px - 20 * sc, hy], hand: 'palm', rot: 70, thumb: -1 }, armR: { at: [px + 20 * sc, hy], hand: 'palm', rot: -70, thumb: 1 } });
   s += paa;
   // ---- the bowl and the sparrow ----
-  s += T.bowl(bx, by, 150);
-  s += T.sparrow(bx - 50, by + 2, 80, { pose: 'land', rotDeg: 12 });
-  // ---- Guu: standing beside him, both fists under Paa's forearm, holding it up ----
-  s += R.guu({ x: px - 214, y: G + 2, s: sc, dir: 'right', look: [1, -0.2], lean: 5, expr: 'determined', build: { armU: 33, armF: 31 },
-    armL: { at: [px - 124, hy + 26], rot: 0 }, armR: { at: [px - 86, hy + 36], rot: 0 } });
+  s += T.bowl(bx, by, 132);
+  s += T.sparrow(bx - 36, by + 2, 72, { pose: 'land', rotDeg: 12 });
+  // ---- Guu: crouched beside him, both fists up under Paa's elbow and forearm ----
+  s += R.guu({ x: px - 206, y: G + 2, s: sc, dir: 'right', look: [1, -0.5], lean: 8, crouch: 24, expr: 'determined', build: { armU: 31, armF: 29 },
+    legL: { foot: [-24, -6] }, legR: { foot: [24, -6] },
+    armL: { at: [px - 62 * sc, G - 56 * sc], rot: 0, over: true }, armR: { at: [px - 42 * sc, G - 50 * sc], rot: 0, over: true } });
   // ---- Choki on tiptoe, two fingers on the itchy nose ----
   const h = paa.info.head;
   s += R.choki({ x: px + 196, y: G - 12, s: sc, dir: 'left', look: 'left', lean: 4, headTilt: 5, expr: 'smirk',

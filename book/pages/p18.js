@@ -17,9 +17,9 @@ module.exports.art = (R, P, { W, H }) => {
   // --- floor
   s += C.floor({ y0, W, H, vx: 380, n: 7, seams: false });
   // --- Choki and Guu watching, behind Paa
-  s += R.choki({ x: 664, y: 628, s: 1.0, dir: 'left', expr: 'grin', look: [-0.9, 0.2], lean: -5,
-    armL: { a: [30, -100], hand: 'fist' }, armR: { a: [16, 8] } });
-  s += R.guu({ x: 584, y: 636, s: 1.0, dir: 'left', expr: 'surprised', look: [-0.9, 0.2],
+  s += R.choki({ x: 666, y: 628, s: 1.0, dir: 'left', expr: 'grin', look: [-0.9, 0.2], lean: -5,
+    armL: { a: [30, -100], hand: 'fist' }, armR: { a: [4, 4], hs: 0.85 } });
+  s += R.guu({ x: 576, y: 636, s: 1.0, dir: 'left', expr: 'surprised', look: [-0.9, 0.2],
     armL: { a: [20, 10] }, armR: { a: [20, 10] } });
   // --- the student, down on one knee
   const st = C.student({ x: 186, y: 652, s: 1.6, dir: 'right', crouch: 86, lean: 9, look: [0.8, 0.7],
