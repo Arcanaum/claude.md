@@ -26,7 +26,7 @@ html,body{margin:0;padding:0;background:#fff}
 .icon svg{width:0.7in;height:0.7in}
 .text{position:absolute;left:0.8in;width:7.1in;font-size:0.265in;line-height:1.4}
 .text.compact{font-size:0.23in}
-.text p{margin:0 0 0.11in}
+.text p{margin:0 0 0.11in;text-wrap:pretty}
 .text b{font-weight:700}
 .text .head{font-family:'Baloo 2';font-weight:800;font-size:0.36in;text-align:center;margin-bottom:0.06in}
 .text .sub{font-family:'Baloo 2';font-weight:700;font-size:0.34in;text-align:center}
@@ -36,7 +36,7 @@ html,body{margin:0;padding:0;background:#fff}
 .text .who{display:flex;align-items:center;gap:0.12in;margin-bottom:0.05in}
 .text .who svg,.hi{width:0.42in;height:0.42in;flex:none;vertical-align:middle}
 .text .call{font-family:'Baloo 2';font-weight:800;font-size:0.42in;text-align:center;margin:0.02in 0 0.06in;letter-spacing:0.02in}
-.text .goto{font-family:'Baloo 2';font-weight:700;font-size:0.25in;border:0.035in solid #000;border-radius:0.16in;padding:0.05in 0.2in;display:table;margin:0.12in auto 0}
+.text .goto{font-family:'Baloo 2';font-weight:700;font-size:0.25in;border:0.035in solid #000;border-radius:0.16in;padding:0.05in 0.2in;display:table;margin:0.12in auto 0;max-width:5.7in;text-align:center}
 .text .goto b{font-weight:800;font-size:0.32in}
 .throw{margin-top:0.08in;border:0.045in solid #000;border-radius:0.22in;overflow:hidden}
 .throw .row{display:flex;align-items:center;gap:0.16in;padding:0.07in 0.2in;border-top:0.03in solid #000}

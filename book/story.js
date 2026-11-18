@@ -59,7 +59,7 @@ module.exports = {
     { n: 15, name: 'Crane: the task', density: 'MEDIUM', icon: 'v',
       text: `<p>“Cross the room without being touched,” she said. “Then you may search.”</p>` },
     { n: 16, name: 'Crane: the turn', density: 'OPEN', icon: 'v',
-      text: `<p>Choki ran his fastest. WHAP! The pole caught him and sat him right down.</p>` },
+      text: `<p>Choki ran his fastest. WHAP! The pole caught him and stopped him flat.</p>` },
     { n: 17, name: 'Crane: the solve', density: 'BUSY', icon: 'v',
       text: `<p>Guu blocked the pole with his shoulder. Paa counted — one, two, THREE — GO! And Choki slipped through like a shadow.</p>` },
     { n: 18, name: 'Crane: the clue', density: 'MEDIUM', icon: 'v',

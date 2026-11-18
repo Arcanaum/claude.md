@@ -81,7 +81,7 @@ const html = guides => `<!doctype html><html><head><meta charset="utf-8"><style>
 <div class="t back"><h2>Rock, paper, scissors —<br>YOU choose the way!</h2>
 <p>Three small brothers. One lost ninja hood. Three dojos to search.</p>
 <p><b>Guu</b> is a rock. <b>Choki</b> is scissors. <b>Paa</b> is paper. Every time the brothers must choose, they throw <b>janken</b> — and you throw too. The winning hand picks the page!</p>
-<ul><li><b>32 big pictures</b> to color, with bold, easy lines</li><li><b>27 ways</b> through one story — play it again and again</li><li>Three dojos, three tests, and a surprise on the roof</li><li>Pictures printed on <b>one side only</b></li></ul></div>
+<ul><li><b>32 pages</b> to color, with bold, easy lines</li><li><b>27 ways</b> through one story — play it again and again</li><li>Three dojos, three tests, and a surprise on the roof</li><li>Pictures printed on <b>one side only</b></li></ul></div>
 <div class="t names"><div>GUU</div><div>CHOKI</div><div>PAA</div></div>
 <div class="t imp2">${story.imprint}<br>A choose-your-way coloring adventure · Ages 6–8</div>
 ${guides ? `<div class="guides"><div style="left:${bx / 100}in;top:${BLEED}in;width:${TW}in;height:${TH}in"></div><div style="left:${fx / 100}in;top:${BLEED}in;width:${TW}in;height:${TH}in"></div><div style="left:${(bx + TW * 100 - 225) / 100}in;top:${BLEED + TH - 1.45}in;width:2in;height:1.2in;border-color:#f0f"></div></div>` : ''}

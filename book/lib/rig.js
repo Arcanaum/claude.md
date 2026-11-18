@@ -443,8 +443,10 @@ function figure(o) {
     const px = k * (b2 + 1);
     torso += shape(P(rrect(px - 11, wy + 2, 22, 20, 6)), { fill: c.bag, w: LW.in }) + ink(P(`M${px - 11} ${wy + 10}Q${px} ${wy + 16} ${px + 11} ${wy + 10}`), { w: LW.fine });
   }
-  if (o.carryHood) { const k = back ? 1 : -1, hx = k * (b1 - 2);
-    torso += shape(P(`M${hx - 7} ${wy + 1}Q${hx} ${wy - 6} ${hx + 7} ${wy + 1}L${hx + 10} ${wy + 26}L${hx + 3} ${wy + 20}L${hx - 2} ${wy + 30}L${hx - 9} ${wy + 22}Z`), { fill: c.lost || '#fff', w: LW.in }) + ink(P(`M${hx - 7} ${wy + 8}L${hx + 8} ${wy + 8}`), { w: LW.fine }); }
+  if (o.carryHood) { // the lost hood hanging from Guu's belt (picture-left hip): hood shape with its eye opening
+    const k = back ? 1 : -1, hx = k * (b1 + 1), hy = wy + 3;
+    torso += shape(P(`M${hx - 11} ${hy + 2}C${hx - 12} ${hy - 8} ${hx + 12} ${hy - 8} ${hx + 11} ${hy + 2}L${hx + 13} ${hy + 30}L${hx + 6} ${hy + 24}L${hx} ${hy + 34}L${hx - 6} ${hy + 24}L${hx - 13} ${hy + 30}Z`), { fill: c.lost || '#fff', w: LW.in });
+    if (s >= 0.9) torso += shape(P(`M${hx - 7} ${hy + 6}Q${hx} ${hy + 2} ${hx + 7} ${hy + 6}Q${hx + 8} ${hy + 11} ${hx + 7} ${hy + 15}Q${hx} ${hy + 18} ${hx - 7} ${hy + 15}Q${hx - 8} ${hy + 11} ${hx - 7} ${hy + 6}Z`), { fill: '#fff', w: LW.fine }); }
   if (B.extra === 'wraps') torso += ink(P(`M${sw * 0.5} ${-TL + 1}L-3 ${wy}`)) + ink(P(`M${-sw * 0.5} ${-TL + 1}L${1.5} ${-TL + 17}`));
   if (who === 'paa' && !back) torso += shape(P(`M${-sw * 0.72} ${-TL + 2}Q0 ${-TL + 17} ${sw * 0.72} ${-TL + 2}Q0 ${-TL + 8} ${-sw * 0.72} ${-TL + 2}Z`), { fill: c.hood, w: LW.in });
 
