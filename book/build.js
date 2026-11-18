@@ -24,7 +24,8 @@ html,body{margin:0;padding:0;background:#fff}
 .art.framed{border:0.045in solid #000;border-radius:0.22in;overflow:hidden}
 .icon{position:absolute;right:0.42in;top:0.4in;width:0.95in;height:0.95in;border:0.04in solid #000;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center}
 .icon svg{width:0.7in;height:0.7in}
-.text{position:absolute;left:0.8in;width:7.1in;font-size:0.235in;line-height:1.42}
+.text{position:absolute;left:0.8in;width:7.1in;font-size:0.265in;line-height:1.4}
+.text.compact{font-size:0.23in}
 .text p{margin:0 0 0.11in}
 .text b{font-weight:700}
 .text .head{font-family:'Baloo 2';font-weight:800;font-size:0.36in;text-align:center;margin-bottom:0.06in}
@@ -84,7 +85,7 @@ function storyPage(p) {
   let h = `<section class="page story" id="p${p.n}" data-n="${p.n}">`;
   h += `<svg class="art${framed ? ' framed' : ''}" style="height:${artH / 100}in" viewBox="0 0 720 ${artH}" xmlns="http://www.w3.org/2000/svg">${art}</svg>`;
   if (p.icon) h += `<div class="icon">${iconSvg(p.icon)}</div>`;
-  h += `<div class="text" style="top:${top}in">${inlineIcons(p.pre || p.text || '')}${p.throwBlock ? throwBlock(p.throwBlock) : ''}</div>`;
+  h += `<div class="text${p.throwBlock ? ' compact' : ''}" style="top:${top}in">${inlineIcons(p.pre || p.text || '')}${p.throwBlock ? throwBlock(p.throwBlock) : ''}</div>`;
   h += `<div class="num">${p.n}</div></section>`;
   return h;
 }
@@ -110,6 +111,12 @@ function frontMatter() {
   const pg = await b.newPage({ viewport: { width: 816, height: 1056 }, deviceScaleFactor: Number(arg('--scale') || 1) });
   await pg.setContent(html, { waitUntil: 'load' });
   await pg.evaluate(() => document.fonts.ready);
+  // centre each page's art + text block vertically in the space above the page number
+  await pg.evaluate(() => { for (const s of document.querySelectorAll('.page.story')) {
+    const r = s.getBoundingClientRect(), t = s.querySelector('.text'), a = s.querySelector('.art'), ic = s.querySelector('.icon');
+    const free = (r.top + 10.25 * 96) - t.getBoundingClientRect().bottom; if (free < 20) continue;
+    const d = Math.min(free / 2, 1.1 * 96);
+    for (const e of [t, a, ic]) if (e) e.style.top = (parseFloat(getComputedStyle(e).top) + d) + 'px'; } });
   // overflow check: text must end above the page-number badge / bottom margin
   const over = await pg.evaluate(() => [...document.querySelectorAll('.page.story')].map(s => {
     const t = s.querySelector('.text').getBoundingClientRect(), r = s.getBoundingClientRect();

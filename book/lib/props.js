@@ -53,7 +53,9 @@ function emblem(kind, x, y, size = 100) {
     s += shape(P(ell(-15, -6, 6, 7)), { w: LW.in }) + shape(P(ell(15, -6, 6, 7)), { w: LW.in }) + R.dot(...R.ap(m, [-15, -5]), 2.6 * size / 100) + R.dot(...R.ap(m, [15, -5]), 2.6 * size / 100);
     s += shape(P('M-7 10L7 10L0 19Z'), { w: LW.in }) + ink(P('M0 19L0 26M-12 28Q-6 34 0 26Q6 34 12 28'));
     s += ink(P('M-6 -36L-3 -22M6 -36L3 -22M0 -38L0 -24')) + ink(P('M-38 -4L-26 0M-40 10L-27 10M38 -4L26 0M40 10L27 10'));
-    if (big) s += ink(P('M-30 22L-18 18M30 22L18 18'));
+    s += ink(P('M-24 -19L-8 -13M24 -19L8 -13'), { w: LW.out });                       // fierce brows
+    s += shape(P('M-9 29L-5 38L-2 29Z'), { w: LW.fine }) + shape(P('M9 29L5 38L2 29Z'), { w: LW.fine }); // fangs
+    s += ink(P('M-34 22L-22 18M34 22L22 18M-30 -22L-22 -14M30 -22L22 -14'));
     return s;
   }
   if (kind === 'crane') {
