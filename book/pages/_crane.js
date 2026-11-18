@@ -68,15 +68,15 @@ function ribbon(pts, w) {
 function streamers(E, T, len = 110, { w = 19, n = 3, wave = 1 } = {}) {
   let s = '';
   const N = [-T[1], T[0]];
-  const order = n === 3 ? [-1, 1, 0] : [0, 1];
+  const order = n === 3 ? [-1, 1, 0] : [1, 0];
   for (const j of order) {
     const pts = [];
-    const fan = j * 0.33, c = Math.cos(fan), sn = Math.sin(fan);
+    const fan = j * 0.42, c = Math.cos(fan), sn = Math.sin(fan);
     const D = [T[0] * c - T[1] * sn, T[0] * sn + T[1] * c];
-    const ll = len * (j === 0 ? 1 : 0.82);
-    for (let i = 0; i <= 5; i++) {
-      const t = i / 5, a = wave * 11 * Math.sin(t * 6.6 + j * 2.1 + 0.6) * t;
-      pts.push([E[0] + D[0] * ll * t + N[0] * a, E[1] + D[1] * ll * t + N[1] * a + 14 * t * t]);
+    const ll = len * (j === 0 ? 1 : 0.8);
+    for (let i = 0; i <= 6; i++) {
+      const t = i / 6, a = wave * 8 * Math.sin(t * 5.4 + j * 2.1 + 0.4) * t;
+      pts.push([E[0] + D[0] * ll * t + N[0] * a, E[1] + D[1] * ll * t + N[1] * a + 10 * t * t]);
     }
     s += ribbon(pts, w);
   }
@@ -99,8 +99,9 @@ function pole({ x, y, h = 150, L = 220, La, Lb, phi = 12, ry = 0.3, dir = 1, pos
   // motion arcs (ellipse of the sweep)
   if (arcs) {
     for (const [sgn, l] of [[-1, La || L], [1, Lb || L]]) {
-      for (const [k, sp] of [[1.0, arcSpan], [0.86, arcSpan * 0.7]]) {
-        const a0 = f + (sgn < 0 ? Math.PI : 0), a1 = a0 - dir * sp * Math.PI / 180 * 1.0, a2 = a0 - dir * 8 * Math.PI / 180;
+      const sp0 = Array.isArray(arcSpan) ? arcSpan[sgn < 0 ? 0 : 1] : arcSpan;
+      for (const [k, sp, st] of [[1.0, sp0, 20], [0.8, sp0 * 0.72, 12], [0.6, sp0 * 0.5, 10]]) {
+        const a0 = f + (sgn < 0 ? Math.PI : 0), a1 = a0 - dir * sp * Math.PI / 180, a2 = a0 - dir * st * Math.PI / 180;
         const p = t => [r1(hub[0] + l * k * Math.cos(t)), r1(hub[1] + l * k * ry * Math.sin(t))];
         const p1 = p(a1), p2 = p(a2);
         back += ink(`M${p1[0]} ${p1[1]}A${r1(l * k)} ${r1(l * k * ry)} 0 0 ${dir > 0 ? 1 : 0} ${p2[0]} ${p2[1]}`, { w: LW.in });

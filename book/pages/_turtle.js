@@ -46,16 +46,11 @@ function sensei(o = {}) {
     out += ink(L('M-100 3L100 3'), { w: LW.fine });
     out += ink(L('M-112 3L-124 9M112 3L124 9'), { w: LW.in });
   }
-  // lap: crossed legs under the robe
-  if (!back) out += shape(L(ell(-36, -3, 15, 8)), { w: LW.in }) + shape(L(ell(36, -3, 15, 8)), { w: LW.in });
-  out += shape(L('M-86 -12C-90 -36 -52 -48 0 -46C52 -48 90 -36 86 -12C84 3 40 4 0 1C-40 4 -84 3 -86 -12Z'));
-  if (!back) out += ink(L('M-64 -22Q-18 -36 24 -9')) + ink(L('M64 -22Q30 -33 6 -21'));
-
   // arms
   function arm(side, spec) {
     spec = spec || {};
     const sh = [side * 33, -62];
-    let t = spec.at ? ap(itm, spec.at) : spec.to ? [side * spec.to[0], spec.to[1]] : [side * 20, -9];
+    let t = spec.at ? ap(itm, spec.at) : spec.to ? [side * spec.to[0], spec.to[1]] : back ? [side * 52, 4] : [side * 20, -9];
     const [el, wr] = ik(sh, t, 30, 28, (spec.bend || 1) * (spec.at ? -side * flip * flip : -side));
     const p = [sh, el, wr].map(q => ap(tm, q));
     // kimono sleeve: soft curved tube + a rounded pouch that hangs straight down from the forearm
@@ -65,7 +60,7 @@ function sensei(o = {}) {
     const armD = `M${R.r1(p[0][0])} ${R.r1(p[0][1])}Q${R.r1(p[1][0])} ${R.r1(p[1][1])} ${R.r1(p[2][0])} ${R.r1(p[2][1])}`;
     const sleeve = union([{ d: pouch }, { d: armD, w: 21 * s }]);
     let a = sleeve;
-    const type = spec.hand || 'mitt';
+    const type = spec.hand || (back ? 'none' : 'mitt');
     if (type !== 'none') {
       const ang = spec.rot != null ? spec.rot : Math.atan2(p[2][1] - p[1][1], p[2][0] - p[1][0]) * 180 / Math.PI + 90;
       const hmx = chain(tr(p[2][0], p[2][1]), rot(ang), sc(s * (spec.hs || 0.95)), tr(0, 6));
@@ -76,8 +71,14 @@ function sensei(o = {}) {
     return { svg: a, over: !!spec.over, behind: !!spec.behind, wrist: p[2] };
   }
   const aL = arm(-1, o.armL), aR = arm(1, o.armR);
-  out += [aL, aR].filter(a => a.behind).map(a => a.svg).join('');
 
+  if (back) out += aL.svg + aR.svg;
+  // lap: crossed legs under the robe
+  if (!back) out += shape(L(ell(-36, -3, 15, 8)), { w: LW.in }) + shape(L(ell(36, -3, 15, 8)), { w: LW.in });
+  out += shape(L('M-86 -12C-90 -36 -52 -48 0 -46C52 -48 90 -36 86 -12C84 3 40 4 0 1C-40 4 -84 3 -86 -12Z'));
+  if (!back) out += ink(L('M-64 -22Q-18 -36 24 -9')) + ink(L('M64 -22Q30 -33 6 -21'));
+
+  out += [aL, aR].filter(a => a.behind && !back).map(a => a.svg).join('');
   // torso: a soft round robe
   out += shape(T('M-27 -76Q-44 -72 -49 -42Q-55 -8 -51 6Q0 14 51 6Q55 -8 49 -42Q44 -72 27 -76Q0 -82 -27 -76Z'));
   if (!back) {
@@ -91,10 +92,9 @@ function sensei(o = {}) {
     out += shape(T('M-52 -27Q0 -20 52 -27L52 -5Q0 3 -52 -5Z'), { w: LW.in });
     out += shape(T(rrect(-21, -36, 42, 38, 7)), { w: LW.in });                     // flat drum knot
     out += ink(T('M-21 -17L21 -17'), { w: LW.fine });
-    const c = ap(tm, [0, -50]);
-    if (s >= 1.1) out += P.emblem('turtle', c[0], c[1], 20 * s);
+    out += ink(T('M0 -65L11 -58.5L11 -45.5L0 -39L-11 -45.5L-11 -58.5Z'), { w: LW.in });      // shell crest
   }
-  out += [aL, aR].filter(a => !a.behind && !a.over).map(a => a.svg).join('');
+  out += [aL, aR].filter(a => !a.behind && !a.over && !back).map(a => a.svg).join('');
 
   // head
   const pin = tube(H('M-27 -57L27 -41'), 2.6 * s, { o: LW.in }) + shape(H(ell(-29, -58, 5, 5)), { w: LW.in });
@@ -121,7 +121,7 @@ function sensei(o = {}) {
     out += shape(H('M-42 -1C-46 -34 -22 -41 0 -41C22 -41 46 -34 42 -1C37 -12 22 -23 0 -25C-22 -23 -37 -12 -42 -1Z'), { w: LW.in });
     out += ink(H('M0 -41L0 -25'), { w: LW.fine }) + ink(H('M-21 -37Q-23 -28 -31 -19M21 -37Q23 -28 31 -19'), { w: LW.fine });
   }
-  out += [aL, aR].filter(a => a.over).map(a => a.svg).join('');
+  out += [aL, aR].filter(a => a.over && !back).map(a => a.svg).join('');
   const res = new String(`<g class="fig fig-sensei">${out}</g>`);
   res.info = { head: ap(hm, [0, 0]), top: ap(hm, [0, -64]), wristL: aL.wrist, wristR: aR.wrist, neck: ap(tm, [0, -72]) };
   return res;
