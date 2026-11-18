@@ -12,8 +12,8 @@ module.exports.art = (R, P, { W, H }) => {
   const none = { a: [14, 4], hand: 'none' };
   s += R.choki({ x: 74, y: 500, s: sc, lean: 22, headTilt: -10, dir: 'right', look: 'right', expr: 'whisper', armL: none, armR: none });
   s += R.paa({ x: 92, y: 612, s: sc, lean: 26, headTilt: -12, dir: 'right', look: 'right', expr: 'happy', armL: none, armR: none, legL: { foot: [-44, -6] }, legR: { foot: [-22, -6] } });
-  s += R.guu({ x: 232, y: 668, s: sc, lean: 14, headTilt: -4, crouch: 44, dir: 'right', look: 'right', expr: 'surprised',
-    legL: { foot: [-32, -6] }, legR: { foot: [32, -6] }, armL: { a: [20, -30] }, armR: { a: [30, -40] } });
+  s += R.guu({ x: 232, y: 668, s: sc, lean: 14, headTilt: -4, crouch: 34, dir: 'right', look: 'right', expr: 'surprised',
+    legL: { foot: [-38, -6] }, legR: { foot: [38, -6] }, armL: { a: [20, -30] }, armR: { a: [30, -40] } });
   // the sliding door they hide behind
   s += T.shoji(-50, -20, 146, 740, 2, 5);
   // hands on the door edge
