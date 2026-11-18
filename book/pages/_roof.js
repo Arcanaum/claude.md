@@ -117,7 +117,7 @@ function puff(x, y, w = 50, rotDeg = 0) {
 // A loose roof tile (curved slab). (x,y) = centre.
 function looseTile(x, y, s = 1, rotDeg = 0) {
   const m = chain(tr(x, y), rot(rotDeg), sc(s)), X = d => xf(d, m);
-  return shape(X('M-32 -26L32 -26L32 4Q0 40 -32 4Z')) + ink(X('M-32 -14L32 -14'), { w: LW.in });
+  return shape(X('M-32 -26Q0 -34 32 -26L32 4Q0 40 -32 4Z'));
 }
 
 // Night sky: moon + stars. stars = [[x,y,r],...]

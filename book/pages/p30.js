@@ -40,19 +40,19 @@ module.exports.art = (R, P, { W, H }) => {
   s += shape(poly([-10, fy], [730, fy], [730, fy + 28], [-10, fy + 28]));
   s += ink(`M20 ${fy + 14}L200 ${fy + 14}M260 ${fy + 14}L420 ${fy + 14}M470 ${fy + 14}L700 ${fy + 14}`, { w: LW.fine });
   // ---- brothers following, tiptoe ----
-  s += R.guu({ x: 84, y: fy - 2, s: 1.2, dir: 'right', expr: 'worried', look: 'right', lean: 3,
-    armL: { a: [24, -96], hand: 'fist' }, armR: { a: [30, -110], hand: 'fist' }, legL: { foot: [-24, -6] }, legR: { foot: [20, -6] } });
-  s += R.choki({ x: 232, y: fy - 2, s: 1.2, dir: 'right', expr: 'doubtful', look: 'right', lean: 4,
-    armL: { a: [70, 30] }, armR: { a: [30, -100] }, legL: { foot: [-8, -6] }, legR: { foot: [24, -20] } });
+  s += R.guu({ x: 76, y: fy - 2, s: 1.2, dir: 'right', expr: 'worried', look: 'right', lean: 3,
+    armL: { a: [40, 16], hand: 'fist' }, armR: { a: [26, -100], hand: 'fist' }, legL: { foot: [-24, -6] }, legR: { foot: [20, -6] } });
+  s += R.choki({ x: 214, y: fy - 2, s: 1.2, dir: 'right', expr: 'doubtful', look: 'right', lean: 4,
+    armL: { a: [22, -92] }, armR: { a: [26, 14] }, legL: { foot: [-8, -6] }, legR: { foot: [24, -20] } });
   // ---- Paa, leading, mid-sneeze: one palm flat on the corner post, the other showing where to step ----
   const p = R.paa({ x: 458, y: fy - 2, s: 1.6, dir: 'left', lean: -3, expr: { eyes: 'squeeze', brows: 'up', mouth: 'shout' },
-    armR: { at: [cx - 16, 352], hand: 'palm', hs: 1.2, rot: 6 }, armL: { a: [46, 6], hand: 'palm' },
+    armR: { at: [cx - 16, 352], hand: 'palm', hs: 1.2, rot: 6 }, armL: { a: [32, 6], hand: 'palm' },
     legL: { foot: [-22, -6] }, legR: { foot: [24, -6] } });
   s += p;
   // sneeze: dust puffs + ACHOO!
   const h = p.info.head;
   s += F.puff(h[0] - 108, h[1] + 30, 46, -10) + F.puff(h[0] - 142, h[1] - 14, 36, 15) + F.puff(h[0] - 150, h[1] + 62, 32, 0);
   s += ink(`M${h[0] - 68} ${h[1] + 30}L${h[0] - 80} ${h[1] + 30}M${h[0] - 66} ${h[1] + 44}L${h[0] - 78} ${h[1] + 52}M${h[0] - 66} ${h[1] + 16}L${h[0] - 78} ${h[1] + 8}`, { w: LW.in });
-  s += P.hollow('ACHOO!', 318, 236, 72, { rotDeg: -5 });
+  s += P.hollow('ACHOO!', 312, 228, 72, { rotDeg: -5 });
   return s;
 };

@@ -25,7 +25,7 @@ module.exports.art = (R, P, { W, H }) => {
   s += F.lanternString([-10, 520], [730, 536], 30, [0.1, 0.3, 0.5, 0.7, 0.9], 1.05);
   // the cat
   s += F.cat(548, top - 22, 0.95, { rotDeg: -8 });
-  s += P.hollow('MEOW!', 540, 192, 64, { rotDeg: -7 });
+  s += P.hollow('MEOW!', 552, 184, 64, { rotDeg: -7 });
   // Choki, tightrope-running
   s += R.choki({ x: 336, y: top - 20, s: 1.6, dir: 'right', expr: 'surprised', look: 'right', lean: -9,
     armL: { a: [122, 24] }, armR: { a: [58, 34] },

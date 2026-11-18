@@ -35,7 +35,7 @@ function sensei(o = {}) {
   const s = o.s || 1, flip = o.flip ? -1 : 1, dir = o.dir || 'front', back = dir === 'back';
   const pm = chain(tr(o.x || 0, o.y || 0), sc(flip * s, s));
   const tm = chain(pm, tr(0, -36), rot(o.lean || 0));          // torso frame: hip (0,0), neck (0,-72)
-  const hm = chain(tm, tr(0, -106), rot(o.headTilt || 0));     // head centre
+  const hm = chain(tm, tr(0, -111), rot(o.headTilt || 0));     // head centre
   const L = d => xf(d, pm), T = d => xf(d, tm), H = d => xf(d, hm);
   const itm = inv(tm);
   let out = '';
@@ -54,20 +54,23 @@ function sensei(o = {}) {
   // arms
   function arm(side, spec) {
     spec = spec || {};
-    const sh = [side * 34, -60];
-    let t = spec.at ? ap(itm, spec.at) : spec.to ? [side * spec.to[0], spec.to[1]] : [side * 55, -12];
+    const sh = [side * 33, -62];
+    let t = spec.at ? ap(itm, spec.at) : spec.to ? [side * spec.to[0], spec.to[1]] : [side * 20, -9];
     const [el, wr] = ik(sh, t, 30, 28, (spec.bend || 1) * (spec.at ? -side * flip * flip : -side));
     const p = [sh, el, wr].map(q => ap(tm, q));
-    // kimono sleeve: fat tube + a pouch that hangs straight down from the forearm
-    const drop = (spec.drop == null ? 20 : spec.drop) * s;
-    const pouch = poly([p[1][0], p[1][1]], [p[2][0], p[2][1]], [p[2][0] * 0.85 + p[1][0] * 0.15, p[2][1] * 0.85 + p[1][1] * 0.15 + drop], [p[1][0] * 0.75 + p[2][0] * 0.25, p[1][1] * 0.75 + p[2][1] * 0.25 + drop * 0.8]);
-    let a = union([{ d: pouch }, { d: line(...p), w: 23 * s }]);
+    // kimono sleeve: soft curved tube + a rounded pouch that hangs straight down from the forearm
+    const drop = (spec.drop == null ? 22 : spec.drop) * s;
+    const mid = (f, dy) => [R.r1(p[1][0] + (p[2][0] - p[1][0]) * f), R.r1(p[1][1] + (p[2][1] - p[1][1]) * f + dy)];
+    const pouch = curve([mid(0.05, 0), mid(0.5, -2 * s), mid(1, 0), mid(0.9, drop), mid(0.45, drop * 1.15), mid(0.1, drop * 0.6)], true);
+    const armD = `M${R.r1(p[0][0])} ${R.r1(p[0][1])}Q${R.r1(p[1][0])} ${R.r1(p[1][1])} ${R.r1(p[2][0])} ${R.r1(p[2][1])}`;
+    const sleeve = union([{ d: pouch }, { d: armD, w: 21 * s }]);
+    let a = sleeve;
     const type = spec.hand || 'mitt';
     if (type !== 'none') {
       const ang = spec.rot != null ? spec.rot : Math.atan2(p[2][1] - p[1][1], p[2][0] - p[1][0]) * 180 / Math.PI + 90;
       const hmx = chain(tr(p[2][0], p[2][1]), rot(ang), sc(s * (spec.hs || 0.95)), tr(0, 6));
-      a = R.handAt(type, hmx, { side: (spec.thumb != null ? spec.thumb : -side) * flip }) + a; // cuff covers the wrist
-      if (spec.handOver) a = a.slice(a.indexOf('<path', 0)) && (union([{ d: pouch }, { d: line(...p), w: 23 * s }]) + R.handAt(type, hmx, { side: (spec.thumb != null ? spec.thumb : -side) * flip }));
+      const hnd = R.handAt(type, hmx, { side: (spec.thumb != null ? spec.thumb : -side) * flip });
+      a = spec.handOver ? sleeve + hnd : hnd + sleeve;   // by default the cuff covers the wrist
     }
     // sleeve hem line near the wrist
     return { svg: a, over: !!spec.over, behind: !!spec.behind, wrist: p[2] };
@@ -76,15 +79,15 @@ function sensei(o = {}) {
   out += [aL, aR].filter(a => a.behind).map(a => a.svg).join('');
 
   // torso: a soft round robe
-  out += shape(T('M-30 -70Q-45 -66 -49 -40Q-55 -8 -51 6Q0 14 51 6Q55 -8 49 -40Q45 -66 30 -70Q0 -77 -30 -70Z'));
+  out += shape(T('M-27 -76Q-44 -72 -49 -42Q-55 -8 -51 6Q0 14 51 6Q55 -8 49 -42Q44 -72 27 -76Q0 -82 -27 -76Z'));
   if (!back) {
-    out += ink(T('M-15 -73L5 -33')) + ink(T('M15 -73L-3 -44'));
-    out += ink(T('M-8 -73L8 -44'), { w: LW.fine });
+    out += ink(T('M-15 -78L5 -33')) + ink(T('M15 -78L-3 -46'));
+    out += ink(T('M-8 -79L8 -46'), { w: LW.fine });
     out += shape(T('M-52 -27Q0 -20 52 -27L52 -5Q0 3 -52 -5Z'), { w: LW.in });      // obi
     out += ink(T('M-52 -16Q0 -9 52 -16'), { w: LW.fine });
     out += shape(T(ell(0, -12, 7, 6)), { w: LW.in });                              // obi knot bead
   } else {
-    out += ink(T('M-17 -72Q0 -60 17 -72'));
+    out += ink(T('M-17 -78Q0 -66 17 -78'));
     out += shape(T('M-52 -27Q0 -20 52 -27L52 -5Q0 3 -52 -5Z'), { w: LW.in });
     out += shape(T(rrect(-21, -36, 42, 38, 7)), { w: LW.in });                     // flat drum knot
     out += ink(T('M-21 -17L21 -17'), { w: LW.fine });
@@ -284,10 +287,10 @@ function garden(x, y, w, h, { wallY, wallH = 78, behind = '', front = '', cloud 
   // wall
   s += shape(rrect(x - 10, wallY + 14, w + 20, wallH, 0));
   s += ink(`M${x - 10} ${wallY + wallH}L${x + w + 10} ${wallY + wallH}`, { w: LW.fine });
-  let cap = `M${x - 14} ${wallY + 20}`; const n = Math.max(3, Math.round((w + 28) / 44)), tw = (w + 28) / n;
-  for (let i = 0; i < n; i++) cap += `Q${R.r1(x - 14 + (i + 0.5) * tw)} ${wallY + 34} ${R.r1(x - 14 + (i + 1) * tw)} ${wallY + 20}`;
-  cap += `L${x + w + 14} ${wallY}L${x - 14} ${wallY}Z`;
-  s += shape(cap);
+  s += shape(rrect(x - 16, wallY, w + 32, 20, 6));
+  let cap = ''; const n = Math.max(3, Math.round((w + 32) / 40)), tw = (w + 32) / n;
+  for (let i = 1; i < n; i++) cap += `M${R.r1(x - 16 + i * tw)} ${wallY}L${R.r1(x - 16 + i * tw)} ${wallY + 20}`;
+  s += ink(cap, { w: LW.in });
   // ground
   const gy = wallY + 14 + wallH;
   if (bushes) s += bush(x + 50, gy + 6, 96);

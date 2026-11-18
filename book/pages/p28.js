@@ -33,7 +33,7 @@ module.exports.art = (R, P, { W, H }) => {
 
   // the loose tile skidding away + CLACK
   s += R.ink('M352 532L346 560M384 530L388 556M368 526L368 548', { w: R.LW.in });
-  s += F.looseTile(366, 598, 1.25, 16) + F.puff(318, 618, 34, -20) + F.puff(420, 612, 30, 15);
+  s += F.looseTile(366, 598, 1.25, -18) + F.puff(318, 618, 34, -20) + F.puff(420, 612, 30, 15);
   s += P.hollow('CLACK', 372, 678, 50, { rotDeg: -4 });
   s += P.hollow('CLACK', 100, 392, 42, { rotDeg: -12 });
   s += P.hollow('CLACK', 628, 300, 38, { rotDeg: 10 });

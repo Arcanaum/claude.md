@@ -64,11 +64,12 @@ function staff(a, b, w = 11) {
   }
   return s;
 }
-// End-on staff used as a roller under the barrel (a short log seen at an angle).
-function roller(x, y, len = 150, w = 16) {
-  let s = tube(line([x - len / 2, y], [x + len / 2, y]), w);
-  s += shape(ell(x + len / 2, y, w * 0.34, w / 2), { w: LW.in });
-  s += ink(line([x - len / 2 + 14, y - w / 2], [x - len / 2 + 14, y + w / 2]), { w: LW.fine });
+// A staff lying on the floor as a roller, pointing toward the viewer. (x,y) = its middle.
+function roller(x, y, len = 90, w = 17) {
+  const a = [x - len * 0.3, y - len * 0.5], b = [x + len * 0.3, y + len * 0.5];
+  let s = tube(line(a, b), w);
+  s += shape(ell(b[0], b[1], w / 2 + 1, w / 2 + 1), { w: LW.in });
+  s += ink(ell(b[0], b[1], w / 4, w / 4), { w: LW.fine });
   return s;
 }
 

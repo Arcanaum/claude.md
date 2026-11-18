@@ -12,7 +12,7 @@ module.exports.art = (R, P, { W, H }) => {
   // dust puffs + skid marks behind his feet
   s += P.cloud(62, GY - 4, 86) + P.cloud(20, GY - 34, 50);
   s += R.ink(`M10 ${GY + 36}L150 ${GY + 36}M60 ${GY + 54}L210 ${GY + 54}`, { w: R.LW.in });
-  const g = R.guu({ x: 158, y: GY + 10, s: sc, spin: 40, dir: 'right', expr: { eyes: 'squeeze', brows: 'angry', mouth: 'teeth' }, lean: -22, headTilt: -6,
+  const g = R.guu({ x: 170, y: GY + 10, s: sc, spin: 40, dir: 'right', expr: { eyes: 'squeeze', brows: 'angry', mouth: 'teeth' }, lean: -22, headTilt: -6,
     armR: { at: [366, GY - 142], hand: 'palm', hs: 1.1, rot: 68 }, armL: { at: [362, GY - 84], hand: 'palm', hs: 1.1, rot: 80, behind: true },
     legL: { foot: [-6, 4], footRot: -34 }, legR: { foot: [30, -24], footRot: -44 } });
   s += g;
