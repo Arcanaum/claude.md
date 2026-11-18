@@ -18,26 +18,28 @@ module.exports.art = (R, P, { W, H }) => {
   s += R.shape(R.rrect(wx - 30, wy + wh + 14, ww + 60, 20, 4));
 
   // ---- brothers ----
-  const sc = 1.3;
-  s += R.guu({ x: 680, y: GY + 4, s: sc, dir: 'left', expr: 'grin', look: [-0.8, -0.4], armL: { a: [20, 8] }, armR: { a: [24, 10] } });
-  s += R.choki({ x: 580, y: GY - 6, s: sc, dir: 'left', expr: 'surprised', look: [-0.8, -0.2], armL: { a: [18, 6], hand: 'mitt' }, armR: { a: [16, 6], hand: 'mitt' } });
-  const pa = R.paa({ x: 478, y: GY + 16, s: sc, dir: 'left', expr: 'happy', look: [-0.7, -0.5], lean: -4,
-    armL: { to: [30, 6], hand: 'palm', rot: -70, hs: 1.15 }, armR: { to: [-40, 14], hand: 'palm', rot: -82, hs: 1.15, over: true } });
+  const sc = 1.22;
+  s += R.guu({ x: 670, y: GY + 4, s: sc, dir: 'left', expr: 'grin', look: [-0.8, -0.4], armL: { a: [20, 8] }, armR: { a: [24, 10] } });
+  s += R.choki({ x: 592, y: GY - 6, s: sc, dir: 'left', expr: 'surprised', look: [-0.8, -0.2], armL: { a: [18, 6], hand: 'mitt' }, armR: { a: [16, 6], hand: 'mitt' } });
+  const pa = R.paa({ x: 506, y: GY + 16, s: sc, dir: 'left', expr: 'happy', look: [-0.7, -0.5], lean: -4,
+    armL: { to: [34, 26], hand: 'palm', rot: -70, hs: 1.15 }, armR: { to: [-36, 36], hand: 'palm', rot: -84, hs: 1.15 } });
   s += pa;
 
   // ---- the student, kneeling ----
-  const hand = [356, GY - 300];
-  const st = T.student({ x: 172, y: GY + 20, s: 2.0, crouch: 44, lean: 14, dir: 'right', expr: 'happy', look: [0.8, 0.5], headTilt: 4,
+  const st = T.student({ x: 128, y: GY + 20, s: 2.0, crouch: 44, lean: 14, dir: 'right', expr: 'happy', look: [0.8, 0.5], headTilt: 4,
     legR: { foot: [44, -6] }, footR: 'side', footDirR: 1,
     legL: { foot: [-62, -8], bend: -1 }, footL: 'side', footDirL: -1,
-    armR: { at: hand, hand: 'none', bend: -1 }, armL: { a: [30, -70], hs: 1.4 } });
+    armR: { a: [154, 2], hand: 'none' }, armL: { a: [30, -70], hs: 1.4 } });
   s += st;
   // pinching hand (finger + thumb) and the single black thread hanging from it
-  const w = st.info.wristR, k = 2.5;
-  const m = R.chain(R.tr(w[0] + 14, w[1] + 12), R.rot(-38), R.sc(k));
-  const tip = R.ap(m, [2, 27]);
-  s += `<g transform="rotate(84 ${R.r1(tip[0])} ${R.r1(tip[1])})">${P.thread(tip[0] + 44, tip[1] + 6, 100)}</g>`;
-  s += R.union([{ d: R.xf(R.ell(0, -4, 14, 13), m) }, { d: R.xf('M-7 4L1 24', m), w: 8 * k }, { d: R.xf('M11 0L4 24', m), w: 8 * k }]);
-  s += R.ink(R.xf('M-12 -6Q-16 4 -10 8M2 6L3 12', m), { w: R.LW.in });
+  const w = st.info.wristR;
+  const tip = [w[0] + 40, w[1] + 64];
+  s += `<g transform="rotate(90 ${R.r1(tip[0])} ${R.r1(tip[1])})">${P.thread(tip[0] + 46, tip[1], 104)}</g>`;
+  s += R.union([
+    { d: R.ell(w[0] + 22, w[1] + 6, 34, 30) },
+    { d: R.line([w[0] + 34, w[1] + 20], [tip[0] + 3, tip[1] - 4]), w: 19 },
+    { d: R.line([w[0] + 6, w[1] + 26], [tip[0] - 9, tip[1] - 2]), w: 19 },
+  ]);
+  s += R.ink(`M${w[0] + 30} ${w[1] - 8}Q${w[0] + 44} ${w[1] + 2} ${w[0] + 40} ${w[1] + 14}M${w[0] + 14} ${w[1] - 12}Q${w[0] + 26} ${w[1] - 2} ${w[0] + 24} ${w[1] + 8}`, { w: R.LW.in });
   return s;
 };

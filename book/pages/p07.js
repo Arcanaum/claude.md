@@ -24,7 +24,7 @@ module.exports.art = (R, P, { W, H }) => {
   const hands = [];
   bro.forEach(([who, cy, expr], i) => {
     const lean = -34, L = R.BUILD[who].TL + 35.2;
-    const hx = px - 50, a = lean * Math.PI / 180;
+    const hx = px - (who === 'paa' ? 38 : 50), a = lean * Math.PI / 180;
     // place the feet so the head centre lands at (hx, cy)
     const hipX = hx - L * sc * Math.sin(a) * -1 * -1, hipY = cy + L * sc * Math.cos(a);
     const B = R.BUILD[who];
@@ -36,7 +36,7 @@ module.exports.art = (R, P, { W, H }) => {
   // doorpost: huge, square, thick — runs off the top, bottom and right of the frame
   s += R.shape(R.rrect(px, -20, pw + 120, 740, 0));
   s += R.ink(`M${px + pw} -20L${px + pw} 720`, { w: R.LW.in });
-  s += R.ink(`M${px + 40} 20Q${px + 52} 200 ${px + 38} 380M${px + 96} 300Q${px + 108} 480 ${px + 94} 690M${px + 70} 60L${px + 70} 150M${px + 28} 470L${px + 28} 600`, { w: R.LW.fine });
+  s += R.ink(`M${px + 40} 20Q${px + 52} 200 ${px + 38} 380M${px + 96} 300Q${px + 108} 480 ${px + 94} 690M${px + 70} 60L${px + 70} 150`, { w: R.LW.fine });
   s += R.shape(R.ell(px + 100, 180, 9, 15), { w: R.LW.fine });
   // six hands gripping the post edge (fingers wrapped round from behind)
   for (const cy of hands) {
