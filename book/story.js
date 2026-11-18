@@ -109,7 +109,7 @@ module.exports = {
         ['v', 'CHOKI', 32, 'Look at picture 2.'],
         ['palm', 'PAA', 32, 'Look at picture 3.']] },
     { n: 32, name: 'Three endings', density: 'MEDIUM', artH: 800, frame: false,
-      text: `<p class="head">And that is how the four of them met.</p>${go('Play again? Go back to page <b>5</b> and throw a different hand.')}` },
+      text: `<p class="head">And that is how the four of them met.</p>${go('Play again? Go back to page <b>5</b> and throw again!')}` },
   ],
   AIKO,
 };

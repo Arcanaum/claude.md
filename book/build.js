@@ -36,8 +36,8 @@ html,body{margin:0;padding:0;background:#fff}
 .text .who{display:flex;align-items:center;gap:0.12in;margin-bottom:0.05in}
 .text .who svg,.hi{width:0.42in;height:0.42in;flex:none;vertical-align:middle}
 .text .call{font-family:'Baloo 2';font-weight:800;font-size:0.42in;text-align:center;margin:0.02in 0 0.06in;letter-spacing:0.02in}
-.text .goto{font-family:'Baloo 2';font-weight:700;font-size:0.25in;border:0.035in solid #000;border-radius:0.16in;padding:0.05in 0.2in;display:table;margin:0.12in auto 0;max-width:5.7in;text-align:center}
-.text .goto b{font-weight:800;font-size:0.32in}
+.text .goto{font-family:'Baloo 2';font-weight:700;font-size:0.225in;border:0.035in solid #000;border-radius:0.16in;padding:0.05in 0.2in;display:table;margin:0.12in auto 0;max-width:5.9in;text-align:center;text-wrap:balance}
+.text .goto b{font-weight:800;font-size:0.29in}
 .throw{margin-top:0.08in;border:0.045in solid #000;border-radius:0.22in;overflow:hidden}
 .throw .row{display:flex;align-items:center;gap:0.16in;padding:0.07in 0.2in;border-top:0.03in solid #000}
 .throw .row:first-child{border-top:0}

@@ -23,9 +23,9 @@ module.exports.art = (R, P, { W, H }) => {
   s += T.shellFloor(330, 628, 420, 104);
   // ---- figures ----
   s += T.sensei({ x: 136, y: G + 6, s: sc, dir: 'right' });
-  s += R.choki({ x: 634, y: G - 4, s: sc, dir: 'left', expr: 'surprised', look: 'left', lean: 5, armL: { a: [20, 30], hand: 'mitt' }, armR: { a: [158, 10], over: true, hs: 1.15 }, legR: { foot: [20, -6] } });
-  s += R.guu({ x: 522, y: G, s: sc, dir: 'left', expr: 'surprised', look: 'left', lean: 3, armL: { a: [28, -120] }, armR: { a: [30, -120] } });
-  s += R.paa({ x: 408, y: G + 4, s: sc, dir: 'left', expr: 'surprised', look: 'left', lean: 5, armL: { a: [120, 40] }, armR: { a: [40, -115] } });
-  s += T.teaTable(290, 650, 150);
+  s += R.choki({ x: 622, y: G - 4, s: sc, dir: 'left', expr: 'surprised', look: 'left', lean: 4, armL: { a: [20, 30], hand: 'mitt' }, armR: { a: [172, -22], over: true, hs: 1.15 }, legR: { foot: [20, -6] } });
+  s += R.guu({ x: 512, y: G, s: sc, dir: 'left', expr: 'surprised', look: 'left', lean: 3, armL: { a: [28, -120] }, armR: { a: [30, -120] } });
+  s += R.paa({ x: 400, y: G + 4, s: sc, dir: 'left', expr: 'surprised', look: 'left', lean: 5, armL: { a: [120, 40] }, armR: { a: [40, -115] } });
+  s += T.teaTable(284, 650, 146);
   return s;
 };

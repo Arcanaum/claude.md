@@ -16,23 +16,25 @@ module.exports.art = (R, P, { W, H }) => {
   s += R.ink(`M-10 ${FY}L730 ${FY}`, { w: R.LW.out });
   s += T.shellFloor(380, 628, 400, 100);
   // ---- Paa: perfectly still, front-on, the bowl held out in front of his chest ----
-  const bx = px, by = G - 84 * sc, hy = G - 64 * sc;
-  const paa = R.paa({ x: px, y: G, s: sc, expr: 'calm',
-    armL: { at: [px - 20 * sc, hy], hand: 'palm', rot: 70, thumb: -1 }, armR: { at: [px + 20 * sc, hy], hand: 'palm', rot: -70, thumb: 1 } });
+  const U = sc, bx = px - 134 * U, wy = G - 78 * U, by = wy - 46;
+  const paa = R.paa({ x: px, y: G, s: sc, expr: 'calm', build: { armU: 43, armF: 41 },
+    armL: { at: [px - 102 * U, wy], hand: 'palm', rot: -92, thumb: 1, hs: 1.05 }, armR: { at: [px - 70 * U, wy + 10], hand: 'none', behind: true } });
+  // ---- Guu: standing upright just behind the arms, both fists pushing up under Paa's forearm ----
+  const gx = px - 96 * U;
+  s += R.guu({ x: gx, y: G - 8, s: sc, expr: 'determined', look: [-0.5, 0.6],
+    armL: { at: [gx - 6 * U, G - 62 * U], hand: 'none' }, armR: { at: [gx + 30 * U, G - 66 * U], hand: 'none' } });
   s += paa;
+  s += R.hand('fist', gx - 4 * U, G - 62 * U, 30 * U) + R.hand('fist', gx + 32 * U, G - 69 * U, 30 * U);
+  s += R.ink(`M${gx - 34 * U} ${G - 58 * U}l-10 8M${gx - 30 * U} ${G - 46 * U}l-12 3M${gx + 56 * U} ${G - 52 * U}l8 9`, { w: R.LW.in });
   // ---- the bowl and the sparrow ----
-  s += T.bowl(bx, by, 132);
-  s += T.sparrow(bx - 36, by + 2, 72, { pose: 'land', rotDeg: 12 });
-  // ---- Guu: crouched beside him, both fists up under Paa's elbow and forearm ----
-  s += R.guu({ x: px - 206, y: G + 2, s: sc, dir: 'right', look: [1, -0.5], lean: 8, crouch: 24, expr: 'determined', build: { armU: 31, armF: 29 },
-    legL: { foot: [-24, -6] }, legR: { foot: [24, -6] },
-    armL: { at: [px - 62 * sc, G - 56 * sc], rot: 0, over: true }, armR: { at: [px - 42 * sc, G - 50 * sc], rot: 0, over: true } });
+  s += T.bowl(bx, by, 140);
+  s += T.sparrow(bx - 52, by + 2, 78, { pose: 'land', rotDeg: 12 });
   // ---- Choki on tiptoe, two fingers on the itchy nose ----
   const h = paa.info.head;
-  s += R.choki({ x: px + 196, y: G - 12, s: sc, dir: 'left', look: 'left', lean: 4, headTilt: 5, expr: 'smirk',
+  s += R.choki({ x: px + 190, y: G - 12, s: sc, dir: 'left', look: 'left', lean: 4, headTilt: 5, expr: 'smirk',
     legL: { foot: [-12, -6], footRot: 50 }, legR: { foot: [12, -6], footRot: 40 },
     armL: { at: [h[0] + 124, h[1] + 49], hand: 'v', rot: -91, hs: 1.3, over: true, thumb: 1 }, armR: { a: [14, 10], hand: 'mitt' } });
   // feathers drifting down
-  s += T.feather(130, 262, 32, 30) + T.feather(300, 300, 30, -40) + T.feather(470, 264, 30, 70);
+  s += T.feather(120, 300, 32, 30) + T.feather(300, 300, 30, -40) + T.feather(470, 264, 30, 70);
   return s;
 };

@@ -16,11 +16,11 @@ module.exports.art = (R, P, { W, H }) => {
   s += R.ink(`M-10 ${FY}L730 ${FY}`, { w: R.LW.out });
   s += T.shellFloor(330, 636, 400, 96);
   // ---- figures ----
-  const bx = 318, by = G - 104 * sc;
-  s += R.choki({ x: 664, y: G - 26, s: sc, dir: 'left', look: [-1, 0.3], lean: -6, expr: 'grin', armL: { a: [20, 20], hand: 'mitt' }, armR: { a: [150, 15], over: true } });
-  s += R.guu({ x: 566, y: G, s: sc, dir: 'left', look: [-1, 0.3], lean: -5, expr: 'happy', armL: { a: [25, -110] }, armR: { a: [20, 20] } });
-  const sen = T.sensei({ x: 150, y: G + 6, s: sc, dir: 'right', lean: 6, armR: { at: [bx - 22, by - 78], hand: 'none' }, armL: { to: [20, -9] } });
-  const paa = R.paa({ x: 442, y: G, s: sc, dir: 'left', look: [-1, 0.5], expr: 'grin', lean: -3,
+  const bx = 300, by = G - 104 * sc;
+  s += R.guu({ x: 522, y: G - 8, s: sc, dir: 'left', look: [-1, 0.3], lean: -4, expr: 'happy', armL: { a: [25, -110] }, armR: { a: [20, 20] } });
+  s += R.choki({ x: 622, y: G + 6, s: sc, dir: 'left', look: [-1, 0.3], lean: 0, expr: 'grin', armL: { a: [20, 20], hand: 'mitt' }, armR: { a: [176, -30], over: true } });
+  const sen = T.sensei({ x: 136, y: G + 6, s: sc, dir: 'right', lean: 6, armR: { at: [bx - 22, by - 78], hand: 'none' }, armL: { to: [20, -9] } });
+  const paa = R.paa({ x: 416, y: G, s: sc, dir: 'left', look: [-1, 0.5], expr: 'grin', lean: -3,
     armL: { at: [bx + 50, by + 50], hand: 'palm', rot: -98, thumb: 1, hs: 1.25 }, armR: { a: [22, 16], hand: 'mitt' } });
   s += paa + sen;
   // the bell, her hand on top of it
