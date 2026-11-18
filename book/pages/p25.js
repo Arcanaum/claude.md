@@ -5,7 +5,7 @@ module.exports.art = (R, P, { W, H }) => {
 
   // ---------- alley: two dojo walls in perspective, a strip of ground between ----------
   // far end of the alley (daylight) with a low fence and a cloud
-  s += P.cloud(300, 205, 120) + P.cloud(452, 168, 84);
+  s += P.cloud(262, 196, 96) + P.cloud(470, 236, 80);
   s += R.shape(R.poly([170, 330], [550, 330], [550, 405], [170, 405]), { w: R.LW.in });
   let fence = '';
   for (let x = 200; x < 550; x += 32) fence += `M${x} 330L${x} 405`;
@@ -20,10 +20,10 @@ module.exports.art = (R, P, { W, H }) => {
     let w = R.shape(R.poly([X(-10), -10], [X(170), 150], [X(170), 405], [X(-10), 700]));
     // planks converge toward the far end
     let d = '';
-    for (const t of [0.2, 0.4, 0.6, 0.8]) d += `M${X(-10)} ${-10 + 710 * t}L${X(170)} ${150 + 255 * t}`;
+    for (const x of [22, 58, 92, 122, 148]) { const t = (x + 10) / 180; d += `M${X(x)} ${-10 + 160 * t}L${X(x)} ${700 - 295 * t}`; }
     w += R.ink(d, { w: F });
-    // a post and a little paper window on the near part of the wall
-    w += R.ink(`M${X(96)} 84L${X(96)} 526`, { w: R.LW.in });
+    // a rail along the wall
+    w += R.ink(`M${X(-10)} 372L${X(170)} 306M${X(-10)} 396L${X(170)} 318`, { w: R.LW.in });
     // eave: roof edge with tile ends
     w += R.shape(R.poly([X(-10), -40], [X(196), 142], [X(196), 164], [X(-10), 4]), { w: R.LW.in });
     return w;
@@ -31,7 +31,7 @@ module.exports.art = (R, P, { W, H }) => {
   s += wall(1) + wall(-1);
 
   // ---------- the huddle ----------
-  const fy = 498, sc = 1.55;
+  const fy = 476, sc = 1.55;
   s += R.guu({ x: 172, y: fy + 6, s: sc, lean: 13, headTilt: 10, expr: 'surprised', look: [0.9, 1], dir: 'right',
     armL: { a: [20, 10] }, armR: { a: [8, 6], behind: true }, legL: { foot: [-22, -6] } });
   s += R.choki({ x: 552, y: fy + 6, s: sc, lean: -13, headTilt: -10, expr: 'grin', look: [-0.9, 1], dir: 'left',
@@ -40,32 +40,32 @@ module.exports.art = (R, P, { W, H }) => {
     armL: { a: [20, 0], hand: 'none' }, armR: { a: [20, 0], hand: 'none' } });
 
   // ---------- Paa's big cupped hands, held out to the reader (EMPTY: the child draws in them) ----------
-  const cx = 360, cy = 548;
+  const cx = 360, cy = 544;
   const T = d => R.xf(d, R.tr(cx, cy));
   // sleeves coming forward from his shoulders
   for (const k of [-1, 1]) {
-    const a = [cx + k * 44, 318], b = [cx + k * 84, cy - 92];
-    s += R.tube(R.line(a, [cx + k * 78, 392], b), 62);
-    s += R.shape(R.xf(R.rrect(-44, -17, 88, 34, 9), R.chain(R.tr(b[0], b[1] - 6), R.rot(k * -8))), { w: R.LW.in });
+    const a = [cx + k * 36, 336], b = [cx + k * 84, cy - 92];
+    s += R.tube(R.line(a, [cx + k * 74, 392], b), 48);
+    s += R.shape(R.xf(R.rrect(-38, -15, 76, 30, 9), R.chain(R.tr(b[0], b[1] - 6), R.rot(k * -8))), { w: R.LW.in });
   }
   const items = [];
   for (const k of [-1, 1]) {
-    items.push({ d: T(R.rrect(k > 0 ? 0 : -166, -112, 166, 184, 46)) });
+    items.push({ d: T(R.rrect(k > 0 ? -10 : -166, -122, 176, 202, 46)) });
     // fingers, toward the reader (index on the outside, little finger in the middle)
-    const fx = [137, 101, 65, 30], fl = [112, 122, 116, 101];
+    const fx = [137, 101, 65, 30], fl = [114, 123, 118, 104];
     fx.forEach((x, i) => items.push({ d: T(`M${k * x} 40L${k * (x + (i === 0 ? 3 : 0))} ${fl[i]}`), w: 30 }));
     // thumb, out to the side
     items.push({ d: T(`M${k * 140} -22L${k * 196} -66`), w: 34 });
   }
   s += R.union(items);
   // light creases that keep the palms open and blank
-  s += R.ink(T('M0 72L0 50'), { w: R.LW.in }) + R.ink(T('M0 -112L0 -100'), { w: R.LW.in });
+  s += R.ink(T('M0 63L0 78'), { w: R.LW.out });
   for (const k of [-1, 1]) {
     s += R.ink(T(`M${k * 152} 30Q${k * 148} 52 ${k * 140} 62`), { w: F });
-    for (const x of [119, 83, 47.5]) s += R.ink(T(`M${k * x} 72L${k * x} 84`), { w: R.LW.in });
+    
   }
   // "draw here" dashed outline: 268 x 152 of clear white
-  s += R.ink(T(R.rrect(-134, -100, 268, 152, 30)), { w: F, dash: '11 10' });
+  s += R.ink(T(R.rrect(-136, -98, 272, 154, 30)), { w: F, dash: '11 10' });
 
   // ---------- the three possible clues, in little frames along the top ----------
   const frame = (x, y, rotDeg, inner) => {
