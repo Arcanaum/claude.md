@@ -1,0 +1,2 @@
+# Build kit copies and check output stay local; only the page and the files it loads are tracked.
+*

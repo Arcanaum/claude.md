@@ -1,0 +1,22 @@
+[
+ {
+  "check": "phone-number",
+  "target": "order__text > p \"(323) 218-9244\"",
+  "reason": "The client's own published number, given in the brief and printed exactly as given: (323) 218-9244."
+ },
+ {
+  "check": "phone-number",
+  "target": "p > a.link",
+  "reason": "The tel: link dials the client's own number from the brief, (323) 218-9244; it reaches the client, not a stranger."
+ },
+ {
+  "check": "hero-lines",
+  "target": "section.hero h1",
+  "reason": "The page's own h1 is 36 characters on 3 lines at 1440, 1024 and 390. Only the 45-character stress takes 4 lines, and it did so with the first two dealt pairings (host, newsreader); a 43-character h1 that passes at 1440 sets on 5 lines at 1024."
+ },
+ {
+  "check": "one-sided",
+  "target": "#order",
+  "reason": "booking-form recipe: the text and the photograph on the left, the form card on the right; the card fills the right column to the right line, the checker counts only the photograph as a visual."
+ }
+]
